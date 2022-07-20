@@ -275,6 +275,9 @@ Codes/DIR-D/
 # pretrained model
 Codes/checkpoints/pretrained_model/
 
+# vgg-19
+Codes/vgg19/imagenet-vgg-verydeep-19.mat
+
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
