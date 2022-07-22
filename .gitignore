@@ -278,6 +278,12 @@ Codes/checkpoints/pretrained_model/
 # vgg-19
 Codes/vgg19/imagenet-vgg-verydeep-19.mat
 
+# slash file
+Codes/slash.py
+
+# final results
+final_rectangling/*
+
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
