@@ -1,10 +1,10 @@
 import tensorflow as tf
 import numpy as np
 from collections import OrderedDict
+import sys
 import os
 import glob
 import cv2
-import slash
 
 rng = np.random.RandomState(2017)
 
@@ -48,7 +48,12 @@ class DataLoader(object):
     def setup(self):
         datas = glob.glob(os.path.join(self.dir, '*'))
         for data in sorted(datas):
-            data_name = data.split(slash.get_slash())[-1]
+
+            if sys.platform[:3] == 'win':
+                data_name = data.split('\\')[-1]
+            else:
+                data_name = data.split('/')[-1]
+
             if data_name == 'gt' or data_name == 'input' or data_name == 'mask':
                 self.datas[data_name] = {}
                 self.datas[data_name]['path'] = data
