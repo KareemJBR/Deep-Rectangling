@@ -1,6 +1,6 @@
 # import cv2
 #
-# image = cv2.imread("grass.jpg")
+# image = cv2.imread("test_images/grass.jpg")
 # image_norm = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
 # image_norm2 = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
 # image_norm3 = cv2.rotate(image, cv2.ROTATE_180)
@@ -17,11 +17,11 @@
 
 # from PIL import Image
 #
-# original_image = Image.open("grass.jpg")
+# original_image = Image.open("test_images/grass.jpg")
 # rotated_image = original_image.rotate(40)
-# rotated_image.save("rotated_image40.jpg")
+# rotated_image.save("test_images/rotated_image40.jpg")
 # rotated_image = original_image.rotate(-40)
-# rotated_image.save("rotated_image-40.jpg")
+# rotated_image.save("test_images/rotated_image-40.jpg")
 # # rotated_image.show()
 
 # ----------------------------------------- testing seam carving ---------------------------------------- #
@@ -29,7 +29,7 @@
 import cv2
 import seam_carving
 
-image = cv2.imread('tower.png')
+image = cv2.imread('test_images/tower.png')
 res = seam_carving.resize(image, (137, 186))
 res = seam_carving.resize(res, (200, 186))
 cv2.imshow('original', image)
