@@ -29,9 +29,16 @@
 import cv2
 import seam_carving
 
-image = cv2.imread('test_images/tower.png')
-res = seam_carving.resize(image, (137, 186))
-res = seam_carving.resize(res, (200, 186))
+# image = cv2.imread('test_images/tower.png')
+# res = seam_carving.resize(image, (137, 186))
+# res = seam_carving.resize(res, (200, 186))
+# cv2.imshow('original', image)
+# cv2.imshow('resized', res)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+
+image = cv2.imread('test_images/camp.jpg')
+res = seam_carving.resize(image, (400, 320))
 cv2.imshow('original', image)
 cv2.imshow('resized', res)
 cv2.waitKey(0)
