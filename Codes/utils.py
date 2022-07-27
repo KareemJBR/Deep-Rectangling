@@ -61,8 +61,6 @@ class DataLoader(object):
                 self.datas[data_name]['frame'].sort()
                 self.datas[data_name]['length'] = len(self.datas[data_name]['frame'])
 
-                # TODO: process the data and add your own images using seam carving and image rotations
-
         print(self.datas.keys())
 
     def get_data_clips(self, index):
