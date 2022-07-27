@@ -25,6 +25,17 @@ def _get_seam_mask(src: np.ndarray, seam: np.ndarray) -> np.ndarray:
     return ~np.eye(src.shape[1], dtype=np.bool)[seam]
 
 
+def _get_energy(gray: np.ndarray) -> np.ndarray:
+    """Get backward energy map from the source image"""
+    assert gray.ndim == 2
+
+    gray = gray.astype(np.float32)
+    grad_x = sobel(gray, axis=1)
+    grad_y = sobel(gray, axis=0)
+    energy = np.abs(grad_x) + np.abs(grad_y)
+    return energy
+
+
 def _remove_seam_mask(src: np.ndarray, seam_mask: np.ndarray) -> np.ndarray:
     """Remove a seam from the source image according to the given seam_mask"""
     if src.ndim == 3:
@@ -42,17 +53,6 @@ def _remove_seam(src: np.ndarray, seam: np.ndarray) -> np.ndarray:
     seam_mask = _get_seam_mask(src, seam)
     dst = _remove_seam_mask(src, seam_mask)
     return dst
-
-
-def _get_energy(gray: np.ndarray) -> np.ndarray:
-    """Get backward energy map from the source image"""
-    assert gray.ndim == 2
-
-    gray = gray.astype(np.float32)
-    grad_x = sobel(gray, axis=1)
-    grad_y = sobel(gray, axis=0)
-    energy = np.abs(grad_x) + np.abs(grad_y)
-    return energy
 
 
 def _get_backward_seam(energy: np.ndarray) -> np.ndarray:
@@ -89,6 +89,7 @@ def _get_backward_seams(gray: np.ndarray, num_seams: int,
     rows = np.arange(0, h, dtype=np.int32)
     idx_map = np.tile(np.arange(0, w, dtype=np.int32), h).reshape((h, w))
     energy = _get_energy(gray)
+
     for _ in range(num_seams):
         if keep_mask is not None:
             energy[keep_mask] += KEEP_MASK_ENERGY
@@ -310,11 +311,14 @@ def resize(src: np.ndarray, size: Tuple[int, int],
     width, height = size
     width = int(round(width))
     height = int(round(height))
+
     if width <= 0 or height <= 0:
         raise ValueError('Invalid size {}: expected > 0'.format(size))
+
     if width >= 2 * src_w:
         raise ValueError('Invalid target width {}: expected less than twice '
                          'the source width (< {})'.format(width, 2 * src_w))
+
     if height >= 2 * src_h:
         raise ValueError('Invalid target height {}: expected less than twice '
                          'the source height (< {})'.format(height, 2 * src_h))
@@ -350,7 +354,6 @@ def remove_object(src: np.ndarray, drop_mask: np.ndarray,
     :return: A copy of the source image where the drop_mask is removed.
     """
     src = _check_src(src)
-
     drop_mask = _check_mask(drop_mask, src.shape[:2])
 
     if keep_mask is not None:
