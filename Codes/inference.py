@@ -2,11 +2,11 @@ import numpy as np
 import tensorflow as tf
 import os
 import cv2
-from model import RectanglingNetwork
-from utils import load, DataLoader
 import skimage
 import constant
-from skimage import measure
+from model import RectanglingNetwork
+from utils import load, DataLoader
+from skimage import metrics
 
 os.environ['CUDA_DEVICES_ORDER'] = "PCI_BUS_ID"
 os.environ['CUDA_VISIBLE_DEVICES'] = constant.GPU
@@ -73,9 +73,8 @@ with tf.Session(config=config) as sess:
             warp_image = (warp_image_final[0] + 1) * 127.5
             warp_gt = (input_clip[0, :, :, 6:9] + 1) * 127.5
 
-            # psnr = skimage.measure.compare_psnr(input1*warp_one, warp*warp_one, 255)
-            psnr = skimage.measure.compare_psnr(warp_image, warp_gt, 255)
-            ssim = skimage.measure.compare_ssim(warp_image, warp_gt, data_range=255, multichannel=True)
+            psnr = skimage.metrics.peak_signal_noise_ratio(warp_image, warp_gt, data_range=255)
+            ssim = skimage.metrics.structural_similarity(warp_image, warp_gt, data_range=255, multichannel=True)
 
             path = "../final_rectangling/" + str(i + 1).zfill(5) + ".jpg"
             cv2.imwrite(path, warp_image)
