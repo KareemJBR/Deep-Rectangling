@@ -8,13 +8,13 @@ TEST_FOLDER = './DIR-D/testing'
 GPU = '0'
 
 # batch size for training
-TRAIN_BATCH_SIZE = 4
+TRAIN_BATCH_SIZE = 1
 
 # batch size for testing
 TEST_BATCH_SIZE = 1
 
 # num of iterations
-ITERATIONS = 100000
+ITERATIONS = 10000
 
 # checkpoints path
 SNAPSHOT_DIR = "./checkpoints"

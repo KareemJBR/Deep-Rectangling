@@ -7,9 +7,6 @@ import numpy as np
 import scipy.io
 import constant
 
-os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = "true"
-os.system('onmt-main --model_type Transformer --config data.yml train --with_eval')
-
 os.environ['CUDA_DEVICES_ORDER'] = "PCI_BUS_ID"
 os.environ['CUDA_VISIBLE_DEVICES'] = constant.GPU
 
@@ -180,8 +177,14 @@ tf.summary.image(tensor=train_warp_image_final, name='train_warp_image_final')
 
 summary_op = tf.summary.merge_all()
 
-config = tf.ConfigProto()
+# config = tf.ConfigProto()
+# config.gpu_options.allow_growth = True
+
+config = tf.compat.v1.ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction = 0.9
 config.gpu_options.allow_growth = True
+config.gpu_options.polling_inactive_delay_msecs = 10
+session = tf.compat.v1.Session(config=config)
 
 with tf.Session(config=config) as sess:
     # summaries
