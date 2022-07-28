@@ -30,10 +30,6 @@ def draw_mesh_on_warp(warp, f_local):
     ch = max_h - min_h
 
     pic = np.ones([ch + 10, cw + 10, 3], np.int32) * 255
-    # x = warp[:,:,0]
-    # y = warp[:,:,2]
-    # warp[:,:,0] = y
-    # warp[:,:,2] = x
     pic[0 - min_h + 5:0 - min_h + 384 + 5, 0 - min_w + 5:0 - min_w + 512 + 5, :] = warp
 
     warp = pic
@@ -43,13 +39,10 @@ def draw_mesh_on_warp(warp, f_local):
     point_color = (0, 255, 0)  # BGR
     thickness = 2
     line_type = 8
-    # cv.circle(warp, (60, 0), 60, point_color, 0)
-    # cv.circle(warp, (f_local[0,0,0], f_local[0,0,1]), 5, point_color, 0)
     num = 1
+
     for i in range(grid_h + 1):
         for j in range(grid_w + 1):
-            # cv.putText(warp, str(num), (f_local[i,j,0], f_local[i,j,1]), cv.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255)
-            # , 1)
             num = num + 1
             if j == grid_w and i == grid_h:
                 continue

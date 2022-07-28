@@ -1,11 +1,11 @@
 # training dataset path
-TRAIN_FOLDER = './DIR-D/training'
+TRAIN_FOLDER = './DIR-D/new_training'
 
 # testing dataset path
 TEST_FOLDER = './DIR-D/testing'
 
 # GPU index
-GPU = '9'
+GPU = '0'
 
 # batch size for training
 TRAIN_BATCH_SIZE = 4

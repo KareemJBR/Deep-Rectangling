@@ -7,6 +7,9 @@ import numpy as np
 import scipy.io
 import constant
 
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = "true"
+os.system('onmt-main --model_type Transformer --config data.yml train --with_eval')
+
 os.environ['CUDA_DEVICES_ORDER'] = "PCI_BUS_ID"
 os.environ['CUDA_VISIBLE_DEVICES'] = constant.GPU
 
