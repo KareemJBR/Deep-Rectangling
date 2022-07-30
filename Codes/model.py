@@ -46,26 +46,26 @@ def RectanglingNetwork(train_input, train_mask, width=512., height=384.):
 def feature_extractor(image_tf):
     feature = []
     # 512*384
-    with tf.compat.v1.variable_scope('conv_block1'):
-        conv1 = tf.compat.v1.layers.conv2d(inputs=image_tf, num_outputs=64, kernel_size=3, rate=1,
+    with tf.variable_scope('conv_block1'):
+        conv1 = tf.layers.conv2d(inputs=image_tf, num_outputs=64, kernel_size=3, rate=1,
                                            activation_fn=tf.nn.relu)
-        conv1 = tf.compat.v1.layers.conv2d(inputs=conv1, num_outputs=64, kernel_size=3, rate=1,
+        conv1 = tf.layers.conv2d(inputs=conv1, num_outputs=64, kernel_size=3, rate=1,
                                            activation_fn=tf.nn.relu)
-        maxpool1 = tf.compat.v1.layers.max_pooling2d(conv1, 2, stride=2, padding='SAME')
+        maxpool1 = tf.layers.max_pooling2d(conv1, 2, stride=2, padding='SAME')
     # 256*192
-    with tf.compat.v1.variable_scope('conv_block2'):
-        conv2 = tf.compat.v1.layers.conv2d(inputs=maxpool1, num_outputs=64, kernel_size=3, activation_fn=tf.nn.relu)
-        conv2 = tf.compat.v1.layers.conv2d(inputs=conv2, num_outputs=64, kernel_size=3, activation_fn=tf.nn.relu)
-        maxpool2 = tf.compat.v1.layers.max_pooling2d(conv2, 2, stride=2, padding='SAME')
+    with tf.variable_scope('conv_block2'):
+        conv2 = tf.layers.conv2d(inputs=maxpool1, num_outputs=64, kernel_size=3, activation_fn=tf.nn.relu)
+        conv2 = tf.layers.conv2d(inputs=conv2, num_outputs=64, kernel_size=3, activation_fn=tf.nn.relu)
+        maxpool2 = tf.layers.max_pooling2d(conv2, 2, stride=2, padding='SAME')
     # 128*96
-    with tf.compat.v1.variable_scope('conv_block3'):
-        conv3 = tf.compat.v1.layers.conv2d(inputs=maxpool2, num_outputs=128, kernel_size=3, activation_fn=tf.nn.relu)
-        conv3 = tf.compat.v1.layers.conv2d(inputs=conv3, num_outputs=128, kernel_size=3, activation_fn=tf.nn.relu)
-        maxpool3 = tf.compat.v1.layers.max_pooling2d(conv3, 2, stride=2, padding='SAME')
+    with tf.variable_scope('conv_block3'):
+        conv3 = tf.layers.conv2d(inputs=maxpool2, num_outputs=128, kernel_size=3, activation_fn=tf.nn.relu)
+        conv3 = tf.layers.conv2d(inputs=conv3, num_outputs=128, kernel_size=3, activation_fn=tf.nn.relu)
+        maxpool3 = tf.layers.max_pooling2d(conv3, 2, stride=2, padding='SAME')
     # 64*48
-    with tf.compat.v1.variable_scope('conv_block4'):
-        conv4 = tf.compat.v1.layers.conv2d(inputs=maxpool3, num_outputs=128, kernel_size=3, activation_fn=tf.nn.relu)
-        conv4 = tf.compat.v1.layers.conv2d(inputs=conv4, num_outputs=128, kernel_size=3, activation_fn=tf.nn.relu)
+    with tf.variable_scope('conv_block4'):
+        conv4 = tf.layers.conv2d(inputs=maxpool3, num_outputs=128, kernel_size=3, activation_fn=tf.nn.relu)
+        conv4 = tf.layers.conv2d(inputs=conv4, num_outputs=128, kernel_size=3, activation_fn=tf.nn.relu)
         feature.append(conv4)
 
     return feature
@@ -73,25 +73,25 @@ def feature_extractor(image_tf):
 
 # mesh motion regression module
 def regression_Net(correlation):
-    conv1 = tf.compat.v1.layers.conv2d(inputs=correlation, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
-    conv1 = tf.compat.v1.layers.conv2d(inputs=conv1, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
+    conv1 = tf.layers.conv2d(inputs=correlation, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
+    conv1 = tf.layers.conv2d(inputs=conv1, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
 
-    maxpool1 = tf.compat.v1.layers.max_pooling2d(conv1, 2, stride=2, padding='SAME')  # 16
-    conv2 = tf.compat.v1.layers.conv2d(inputs=maxpool1, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
-    conv2 = tf.compat.v1.layers.conv2d(inputs=conv2, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
+    maxpool1 = tf.layers.max_pooling2d(conv1, 2, stride=2, padding='SAME')  # 16
+    conv2 = tf.layers.conv2d(inputs=maxpool1, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
+    conv2 = tf.layers.conv2d(inputs=conv2, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
 
-    maxpool2 = tf.compat.v1.layers.max_pooling2d(conv2, 2, stride=2, padding='SAME')  # 8
-    conv3 = tf.compat.v1.layers.conv2d(inputs=maxpool2, num_outputs=512, kernel_size=3, activation_fn=tf.nn.relu)
-    conv3 = tf.compat.v1.layers.conv2d(inputs=conv3, num_outputs=512, kernel_size=3, activation_fn=tf.nn.relu)
+    maxpool2 = tf.layers.max_pooling2d(conv2, 2, stride=2, padding='SAME')  # 8
+    conv3 = tf.layers.conv2d(inputs=maxpool2, num_outputs=512, kernel_size=3, activation_fn=tf.nn.relu)
+    conv3 = tf.layers.conv2d(inputs=conv3, num_outputs=512, kernel_size=3, activation_fn=tf.nn.relu)
 
-    maxpool3 = tf.compat.v1.layers.max_pooling2d(conv3, 2, stride=2, padding='SAME')  # 4
-    conv4 = tf.compat.v1.layers.conv2d(inputs=maxpool3, num_outputs=512, kernel_size=3, activation_fn=tf.nn.relu)
-    conv4 = tf.compat.v1.layers.conv2d(inputs=conv4, num_outputs=512, kernel_size=3, activation_fn=tf.nn.relu)
+    maxpool3 = tf.layers.max_pooling2d(conv3, 2, stride=2, padding='SAME')  # 4
+    conv4 = tf.layers.conv2d(inputs=maxpool3, num_outputs=512, kernel_size=3, activation_fn=tf.nn.relu)
+    conv4 = tf.layers.conv2d(inputs=conv4, num_outputs=512, kernel_size=3, activation_fn=tf.nn.relu)
 
-    fc1 = tf.compat.v1.layers.conv2d(inputs=conv4, num_outputs=2048, kernel_size=[3, 4], activation_fn=tf.nn.relu,
+    fc1 = tf.layers.conv2d(inputs=conv4, num_outputs=2048, kernel_size=[3, 4], activation_fn=tf.nn.relu,
                                      padding="VALID")
-    fc2 = tf.compat.v1.layers.conv2d(inputs=fc1, num_outputs=1024, kernel_size=1, activation_fn=tf.nn.relu)
-    fc3 = tf.compat.v1.layers.conv2d(inputs=fc2, num_outputs=(grid_w + 1) * (grid_h + 1) * 2, kernel_size=1,
+    fc2 = tf.layers.conv2d(inputs=fc1, num_outputs=1024, kernel_size=1, activation_fn=tf.nn.relu)
+    fc3 = tf.layers.conv2d(inputs=fc2, num_outputs=(grid_w + 1) * (grid_h + 1) * 2, kernel_size=1,
                                      activation_fn=None)
     # net3_f = tf.expand_dims(tf.squeeze(tf.squeeze(fc3,1),1), [2])
     net3_f_local = tf.reshape(fc3, (-1, grid_h + 1, grid_w + 1, 2))
@@ -100,16 +100,16 @@ def regression_Net(correlation):
 
 
 def build_model(train_input, train_mask):
-    with tf.compat.v1.variable_scope('model'):
+    with tf.variable_scope('model'):
 
-        with tf.compat.v1.variable_scope('feature_extract', reuse=None):
+        with tf.variable_scope('feature_extract', reuse=None):
             features = feature_extractor(tf.concat([train_input, train_mask], axis=3))
 
-        feature = tf.compat.v1.image.resize_images(features[-1], [24, 32], method=0)
-        with tf.compat.v1.variable_scope('regression_coarse', reuse=None):
+        feature = tf.image.resize_images(features[-1], [24, 32], method=0)
+        with tf.variable_scope('regression_coarse', reuse=None):
             mesh_shift_primary = regression_Net(feature)
 
-        with tf.compat.v1.variable_scope('regression_fine', reuse=None):
+        with tf.variable_scope('regression_fine', reuse=None):
             mesh_primary = shift2mesh(mesh_shift_primary / 16, 32., 24.)
             feature_warp = tf_spatial_transform_local_feature.transformer(feature, mesh_primary)
             mesh_shift_final = regression_Net(feature_warp)
