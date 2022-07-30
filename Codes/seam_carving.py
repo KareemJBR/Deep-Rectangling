@@ -293,14 +293,8 @@ def resize(src: np.ndarray, size: Tuple[int, int],
     """Resize the image using the content-aware seam-carving algorithm.
     :param src: A source image in RGB or grayscale format.
     :param size: The target size in pixels, as a 2-tuple (width, height)
-    :param energy_mode: Policy to compute energy for the source image. Could be
-        one of ``backward`` or ``forward``. If ``backward``, compute the energy
-        as the gradient at each pixel. If ``forward``, compute the energy as the
-        distances between adjacent pixels after each pixel is removed.
-    :param order: The order to remove horizontal and vertical seams. Could be
-        one of ``width-first`` or ``height-first``. In ``width-first`` mode, we
-        remove or insert all vertical seams first, then the horizontal ones,
-        while ``height-first`` is the opposite.
+    :param energy_mode: Policy to compute energy for the source image.
+    :param order: The order to remove horizontal and vertical seams.
     :param keep_mask: An optional mask where the foreground is protected from
         seam removal. If not specify, no area will be protected.
     :return: A resized copy of the source image.
