@@ -5,7 +5,7 @@ TRAIN_FOLDER = './DIR-D/training'
 TEST_FOLDER = './DIR-D/testing'
 
 # GPU index
-GPU = '1'
+GPU = '0'
 
 # batch size for training
 TRAIN_BATCH_SIZE = 1

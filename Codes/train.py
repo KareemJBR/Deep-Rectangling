@@ -43,9 +43,9 @@ print("[i] Loaded pre-trained vgg19 parameters")
 
 # build VGG19 to load pre-trained parameters
 def build_vgg19(_input, reuse=False):
-    with tf.variable_scope("vgg19"):
+    with tf.compat.v1.variable_scope("vgg19"):
         if reuse:
-            tf.get_variable_scope().reuse_variables()
+            tf.compat.v1.get_variable_scope().reuse_variables()
         net = {}
         vgg_layers = vgg_path['layers'][0]
         net['input'] = _input - np.array([123.6800, 116.7790, 103.9390]).reshape((1, 1, 1, 3))
@@ -88,8 +88,8 @@ with tf.name_scope('dataset'):
     print('train gt = {}'.format(train_gt))
 
 # define training rectangling function
-with tf.variable_scope('generator', reuse=None):
-    print('training = {}'.format(tf.get_variable_scope().name))
+with tf.compat.v1.variable_scope('generator', reuse=None):
+    print('training = {}'.format(tf.compat.v1.get_variable_scope().name))
     train_mesh_primary, train_warp_image_primary, train_warp_mask_primary, train_mesh_final, train_warp_image_final, \
         train_warp_mask_final = RectanglingNetwork(train_input, train_mask)
 
@@ -149,9 +149,9 @@ with tf.name_scope('training'):
                        mesh_loss * lam_mesh], name='g_loss')
 
     g_step = tf.Variable(0, dtype=tf.int32, trainable=False, name='g_step')
-    g_lrate = tf.train.exponential_decay(0.0001, g_step, decay_steps=50000 / 4, decay_rate=0.96)
-    g_optimizer = tf.train.AdamOptimizer(learning_rate=g_lrate, name='g_optimizer')
-    g_vars = tf.get_collection(key=tf.GraphKeys.TRAINABLE_VARIABLES, scope='generator')
+    g_lrate = tf.keras.optimizers.schedules.ExponentialDecay(0.0001, g_step, decay_steps=50000 / 4, decay_rate=0.96)
+    g_optimizer = tf.keras.optimizers.Adam(learning_rate=g_lrate, name='g_optimizer')
+    g_vars = tf.compat.v1.get_collection(key=tf.compat.v1.GraphKeys.TRAINABLE_VARIABLES, scope='generator')
 
     grads = g_optimizer.compute_gradients(g_loss, var_list=g_vars)
     for i, (g, v) in enumerate(grads):
@@ -161,35 +161,35 @@ with tf.name_scope('training'):
 
 # add all to summaries'
 # loss
-tf.summary.scalar(tensor=g_loss, name='g_loss')
-tf.summary.scalar(tensor=appearance_loss, name='appearance_loss')
-tf.summary.scalar(tensor=perception_loss, name='perception_loss')
-tf.summary.scalar(tensor=mask_loss, name='mask_loss')
-tf.summary.scalar(tensor=mesh_loss, name='mesh_loss')
+tf.compat.v1.summary.scalar(tensor=g_loss, name='g_loss')
+tf.compat.v1.summary.scalar(tensor=appearance_loss, name='appearance_loss')
+tf.compat.v1.summary.scalar(tensor=perception_loss, name='perception_loss')
+tf.compat.v1.summary.scalar(tensor=mask_loss, name='mask_loss')
+tf.compat.v1.summary.scalar(tensor=mesh_loss, name='mesh_loss')
 # images
-tf.summary.image(tensor=train_input, name='train_input')
-tf.summary.image(tensor=train_mask, name='train_mask')
-tf.summary.image(tensor=train_gt, name='train_gt')
-tf.summary.image(tensor=train_warp_image_primary, name='train_warp_image_primary')
-tf.summary.image(tensor=train_warp_image_final, name='train_warp_image_final')
+tf.compat.v1.summary.image(tensor=train_input, name='train_input')
+tf.compat.v1.summary.image(tensor=train_mask, name='train_mask')
+tf.compat.v1.summary.image(tensor=train_gt, name='train_gt')
+tf.compat.v1.summary.image(tensor=train_warp_image_primary, name='train_warp_image_primary')
+tf.compat.v1.summary.image(tensor=train_warp_image_final, name='train_warp_image_final')
 
-summary_op = tf.summary.merge_all()
+summary_op = tf.compat.v1.summary.merge_all()
 
-config = tf.ConfigProto()
+config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
 
-with tf.Session(config=config) as sess:
+with tf.compat.v1.Session(config=config) as sess:
     # summaries
-    summary_writer = tf.summary.FileWriter(summary_dir, graph=sess.graph)
+    summary_writer = tf.compat.v1.summary.FileWriter(summary_dir, graph=sess.graph)
 
     # initialize weights
-    sess.run(tf.global_variables_initializer())
+    sess.run(tf.compat.v1.global_variables_initializer())
     print('Init successfully!')
 
     # tf saver
-    saver = tf.train.Saver(var_list=tf.global_variables(), max_to_keep=None)
-    restore_var = [v for v in tf.global_variables()]
-    loader = tf.train.Saver(var_list=restore_var)
+    saver = tf.compat.v1.train.Saver(var_list=tf.compat.v1.global_variables(), max_to_keep=None)
+    restore_var = [v for v in tf.compat.v1.global_variables()]
+    loader = tf.compat.v1.train.Saver(var_list=restore_var)
     print("snapshot_dir")
     print(snapshot_dir)
     if os.path.isdir(snapshot_dir):

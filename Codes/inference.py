@@ -21,7 +21,8 @@ snapshot_dir = constant.SNAPSHOT_DIR + '/pretrained_model/model.ckpt-100000'
 # define dataset
 with tf.name_scope('dataset'):
     # --------- testing --------- #
-    test_inputs_clips_tensor = tf.placeholder(shape=[batch_size, None, None, 3 * 3], dtype=tf.float32)
+    tf.compat.v1.disable_eager_execution()
+    test_inputs_clips_tensor = tf.compat.v1.placeholder(shape=[batch_size, None, None, 3 * 3], dtype=tf.float32)
 
     test_input = test_inputs_clips_tensor[..., 0:3]
     test_mask = test_inputs_clips_tensor[..., 3:6]
@@ -32,26 +33,26 @@ with tf.name_scope('dataset'):
     print('test gt = {}'.format(test_gt))
 
 # define testing generator function 
-with tf.variable_scope('generator', reuse=None):
-    print('testing = {}'.format(tf.get_variable_scope().name))
+with tf.compat.v1.variable_scope('generator', reuse=None):
+    print('testing = {}'.format(tf.compat.v1.get_variable_scope().name))
     test_mesh_primary, test_warp_image_primary, test_warp_mask_primary, test_mesh_final, test_warp_image_final, \
         test_warp_mask_final = RectanglingNetwork(test_input, test_mask)
 
-config = tf.ConfigProto()
+config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
-with tf.Session(config=config) as sess:
+with tf.compat.v1.Session(config=config) as sess:
     # dataset
     input_loader = DataLoader(test_folder)
 
     # initialize weights
-    sess.run(tf.global_variables_initializer())
+    sess.run(tf.compat.v1.global_variables_initializer())
     print('Init global successfully!')
 
     # tf saver
-    saver = tf.train.Saver(var_list=tf.global_variables(), max_to_keep=None)
+    saver = tf.compat.v1.train.Saver(var_list=tf.compat.v1.global_variables(), max_to_keep=None)
 
-    restore_var = [v for v in tf.global_variables()]
-    loader = tf.train.Saver(var_list=restore_var)
+    restore_var = [v for v in tf.compat.v1.global_variables()]
+    loader = tf.compat.v1.train.Saver(var_list=restore_var)
 
 
     def inference_func(ckpt):
