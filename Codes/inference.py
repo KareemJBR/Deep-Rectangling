@@ -15,6 +15,7 @@ test_folder = constant.TEST_FOLDER
 batch_size = constant.TEST_BATCH_SIZE
 
 snapshot_dir = constant.SNAPSHOT_DIR + '/pretrained_model/model.ckpt-100000'
+# snapshot_dir = constant.SNAPSHOT_DIR + '/our_model/model.ckpt-' + str(constant.ITERATIONS)
 # snapshot_dir = './checkpoints/model.ckpt-100000'
 
 # define dataset

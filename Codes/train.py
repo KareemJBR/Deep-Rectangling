@@ -73,8 +73,6 @@ def build_vgg19(_input, reuse=False):
 
 # define dataset
 with tf.name_scope('dataset'):
-    # -------------- training -------------- #
-    # input
     train_data_loader = DataLoader(train_folder)
     train_data_dataset = train_data_loader(batch_size=batch_size)
     train_data_it = train_data_dataset.make_one_shot_iterator()
@@ -177,14 +175,8 @@ tf.summary.image(tensor=train_warp_image_final, name='train_warp_image_final')
 
 summary_op = tf.summary.merge_all()
 
-# config = tf.ConfigProto()
-# config.gpu_options.allow_growth = True
-
-config = tf.compat.v1.ConfigProto()
-config.gpu_options.per_process_gpu_memory_fraction = 0.9
+config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
-config.gpu_options.polling_inactive_delay_msecs = 10
-session = tf.compat.v1.Session(config=config)
 
 with tf.Session(config=config) as sess:
     # summaries
@@ -230,7 +222,6 @@ with tf.Session(config=config) as sess:
                     '                 vgg   Loss : ({:.4f} * {:.4f} = {:.4f})'.format(_perception_loss, lam_perception,
                                                                                       _perception_loss *
                                                                                       lam_perception))
-
                 print('                 mask   Loss : ({:.4f} * {:.4f} = {:.4f})'.format(_mask_loss, lam_mask,
                                                                                          _mask_loss * lam_mask))
                 print('                 mesh   Loss : ({:.4f} * {:.4f} = {:.4f})'.format(_mesh_loss, lam_mesh,
@@ -239,7 +230,7 @@ with tf.Session(config=config) as sess:
                 summary_writer.add_summary(_summaries, global_step=_step)
                 print('Save summaries...')
 
-            if _step % 100000 == 0:
+            if _step == constant.ITERATIONS:
                 save(saver, sess, snapshot_dir, _step)
 
         except tf.errors.OutOfRangeError:
