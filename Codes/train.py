@@ -149,8 +149,8 @@ with tf.name_scope('training'):
                        mesh_loss * lam_mesh], name='g_loss')
 
     g_step = tf.Variable(0, dtype=tf.int32, trainable=False, name='g_step')
-    g_lrate = tf.keras.optimizers.schedules.ExponentialDecay(0.0001, g_step, decay_steps=50000 / 4, decay_rate=0.96)
-    g_optimizer = tf.keras.optimizers.Adam(learning_rate=g_lrate, name='g_optimizer')
+    g_lrate = tf.train.exponential_decay(0.0001, g_step, decay_steps=50000 / 4, decay_rate=0.96)
+    g_optimizer = tf.train.AdamOptimizer(learning_rate=g_lrate, name='g_optimizer')
     g_vars = tf.get_collection(key=tf.GraphKeys.TRAINABLE_VARIABLES, scope='generator')
 
     grads = g_optimizer.compute_gradients(g_loss, var_list=g_vars)
