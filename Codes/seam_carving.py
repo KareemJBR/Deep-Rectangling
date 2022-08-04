@@ -290,15 +290,7 @@ def _check_src(src: np.ndarray) -> np.ndarray:
 def resize(src: np.ndarray, size: Tuple[int, int],
            energy_mode: str = 'backward', order: str = 'width-first',
            keep_mask: Optional[np.ndarray] = None) -> np.ndarray:
-    """Resize the image using the content-aware seam-carving algorithm.
-    :param src: A source image in RGB or grayscale format.
-    :param size: The target size in pixels, as a 2-tuple (width, height)
-    :param energy_mode: Policy to compute energy for the source image.
-    :param order: The order to remove horizontal and vertical seams.
-    :param keep_mask: An optional mask where the foreground is protected from
-        seam removal. If not specify, no area will be protected.
-    :return: A resized copy of the source image.
-    """
+    """Resize the image using the content-aware seam-carving algorithm."""
     src = _check_src(src)
     src_h, src_w = src.shape[:2]
 
@@ -340,13 +332,7 @@ def resize(src: np.ndarray, size: Tuple[int, int],
 
 def remove_object(src: np.ndarray, drop_mask: np.ndarray,
                   keep_mask: Optional[np.ndarray] = None) -> np.ndarray:
-    """Remove an object on the source image.
-    :param src: A source image in RGB or grayscale format.
-    :param drop_mask: A binary object mask to remove.
-    :param keep_mask: An optional binary object mask to be protected from
-        removal. If not specified, no area is protected.
-    :return: A copy of the source image where the drop_mask is removed.
-    """
+    """Remove an object on the source image."""
     src = _check_src(src)
     drop_mask = _check_mask(drop_mask, src.shape[:2])
 
