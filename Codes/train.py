@@ -7,6 +7,7 @@ import numpy as np
 import scipy.io
 import constant
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 os.environ['CUDA_DEVICES_ORDER'] = "PCI_BUS_ID"
 os.environ['CUDA_VISIBLE_DEVICES'] = constant.GPU
 
