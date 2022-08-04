@@ -1,6 +1,9 @@
 import tensorflow as tf
+import tensorflow.contrib.slim as slim
+from tensorflow.contrib.layers import conv2d
 import tf_spatial_transform_local
 import tf_spatial_transform_local_feature
+
 import constant
 
 grid_w = constant.GRID_W
@@ -29,7 +32,6 @@ def shift2mesh(mesh_shift, width, height):
 
 
 def RectanglingNetwork(train_input, train_mask, width=512., height=384.):
-
     mesh_shift_primary, mesh_shift_final = build_model(train_input, train_mask)
 
     mesh_primary = shift2mesh(mesh_shift_primary, width, height)
@@ -47,25 +49,23 @@ def feature_extractor(image_tf):
     feature = []
     # 512*384
     with tf.variable_scope('conv_block1'):
-        conv1 = tf.layers.conv2d(inputs=image_tf, num_outputs=64, kernel_size=3, rate=1,
-                                           activation_fn=tf.nn.relu)
-        conv1 = tf.layers.conv2d(inputs=conv1, num_outputs=64, kernel_size=3, rate=1,
-                                           activation_fn=tf.nn.relu)
-        maxpool1 = tf.layers.max_pooling2d(conv1, 2, stride=2, padding='SAME')
+        conv1 = conv2d(inputs=image_tf, num_outputs=64, kernel_size=3, rate=1, activation_fn=tf.nn.relu)
+        conv1 = conv2d(inputs=conv1, num_outputs=64, kernel_size=3, rate=1, activation_fn=tf.nn.relu)
+        maxpool1 = slim.max_pool2d(conv1, 2, stride=2, padding='SAME')
     # 256*192
     with tf.variable_scope('conv_block2'):
-        conv2 = tf.layers.conv2d(inputs=maxpool1, num_outputs=64, kernel_size=3, activation_fn=tf.nn.relu)
-        conv2 = tf.layers.conv2d(inputs=conv2, num_outputs=64, kernel_size=3, activation_fn=tf.nn.relu)
-        maxpool2 = tf.layers.max_pooling2d(conv2, 2, stride=2, padding='SAME')
+        conv2 = conv2d(inputs=maxpool1, num_outputs=64, kernel_size=3, activation_fn=tf.nn.relu)
+        conv2 = conv2d(inputs=conv2, num_outputs=64, kernel_size=3, activation_fn=tf.nn.relu)
+        maxpool2 = slim.max_pool2d(conv2, 2, stride=2, padding='SAME')
     # 128*96
     with tf.variable_scope('conv_block3'):
-        conv3 = tf.layers.conv2d(inputs=maxpool2, num_outputs=128, kernel_size=3, activation_fn=tf.nn.relu)
-        conv3 = tf.layers.conv2d(inputs=conv3, num_outputs=128, kernel_size=3, activation_fn=tf.nn.relu)
-        maxpool3 = tf.layers.max_pooling2d(conv3, 2, stride=2, padding='SAME')
+        conv3 = conv2d(inputs=maxpool2, num_outputs=128, kernel_size=3, activation_fn=tf.nn.relu)
+        conv3 = conv2d(inputs=conv3, num_outputs=128, kernel_size=3, activation_fn=tf.nn.relu)
+        maxpool3 = slim.max_pool2d(conv3, 2, stride=2, padding='SAME')
     # 64*48
     with tf.variable_scope('conv_block4'):
-        conv4 = tf.layers.conv2d(inputs=maxpool3, num_outputs=128, kernel_size=3, activation_fn=tf.nn.relu)
-        conv4 = tf.layers.conv2d(inputs=conv4, num_outputs=128, kernel_size=3, activation_fn=tf.nn.relu)
+        conv4 = conv2d(inputs=maxpool3, num_outputs=128, kernel_size=3, activation_fn=tf.nn.relu)
+        conv4 = conv2d(inputs=conv4, num_outputs=128, kernel_size=3, activation_fn=tf.nn.relu)
         feature.append(conv4)
 
     return feature
@@ -73,26 +73,24 @@ def feature_extractor(image_tf):
 
 # mesh motion regression module
 def regression_Net(correlation):
-    conv1 = tf.layers.conv2d(inputs=correlation, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
-    conv1 = tf.layers.conv2d(inputs=conv1, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
+    conv1 = conv2d(inputs=correlation, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
+    conv1 = conv2d(inputs=conv1, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
 
-    maxpool1 = tf.layers.max_pooling2d(conv1, 2, stride=2, padding='SAME')  # 16
-    conv2 = tf.layers.conv2d(inputs=maxpool1, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
-    conv2 = tf.layers.conv2d(inputs=conv2, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
+    maxpool1 = slim.max_pool2d(conv1, 2, stride=2, padding='SAME')  # 16
+    conv2 = conv2d(inputs=maxpool1, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
+    conv2 = conv2d(inputs=conv2, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
 
-    maxpool2 = tf.layers.max_pooling2d(conv2, 2, stride=2, padding='SAME')  # 8
-    conv3 = tf.layers.conv2d(inputs=maxpool2, num_outputs=512, kernel_size=3, activation_fn=tf.nn.relu)
-    conv3 = tf.layers.conv2d(inputs=conv3, num_outputs=512, kernel_size=3, activation_fn=tf.nn.relu)
+    maxpool2 = slim.max_pool2d(conv2, 2, stride=2, padding='SAME')  # 8
+    conv3 = conv2d(inputs=maxpool2, num_outputs=512, kernel_size=3, activation_fn=tf.nn.relu)
+    conv3 = conv2d(inputs=conv3, num_outputs=512, kernel_size=3, activation_fn=tf.nn.relu)
 
-    maxpool3 = tf.layers.max_pooling2d(conv3, 2, stride=2, padding='SAME')  # 4
-    conv4 = tf.layers.conv2d(inputs=maxpool3, num_outputs=512, kernel_size=3, activation_fn=tf.nn.relu)
-    conv4 = tf.layers.conv2d(inputs=conv4, num_outputs=512, kernel_size=3, activation_fn=tf.nn.relu)
+    maxpool3 = slim.max_pool2d(conv3, 2, stride=2, padding='SAME')  # 4
+    conv4 = conv2d(inputs=maxpool3, num_outputs=512, kernel_size=3, activation_fn=tf.nn.relu)
+    conv4 = conv2d(inputs=conv4, num_outputs=512, kernel_size=3, activation_fn=tf.nn.relu)
 
-    fc1 = tf.layers.conv2d(inputs=conv4, num_outputs=2048, kernel_size=[3, 4], activation_fn=tf.nn.relu,
-                                     padding="VALID")
-    fc2 = tf.layers.conv2d(inputs=fc1, num_outputs=1024, kernel_size=1, activation_fn=tf.nn.relu)
-    fc3 = tf.layers.conv2d(inputs=fc2, num_outputs=(grid_w + 1) * (grid_h + 1) * 2, kernel_size=1,
-                                     activation_fn=None)
+    fc1 = conv2d(inputs=conv4, num_outputs=2048, kernel_size=[3, 4], activation_fn=tf.nn.relu, padding="VALID")
+    fc2 = conv2d(inputs=fc1, num_outputs=1024, kernel_size=1, activation_fn=tf.nn.relu)
+    fc3 = conv2d(inputs=fc2, num_outputs=(grid_w + 1) * (grid_h + 1) * 2, kernel_size=1, activation_fn=None)
     # net3_f = tf.expand_dims(tf.squeeze(tf.squeeze(fc3,1),1), [2])
     net3_f_local = tf.reshape(fc3, (-1, grid_h + 1, grid_w + 1, 2))
 
