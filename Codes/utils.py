@@ -5,6 +5,7 @@ import sys
 import os
 import glob
 import cv2
+import engine
 
 rng = np.random.RandomState(2017)
 
@@ -24,9 +25,42 @@ class DataLoader(object):
                 data_clip = []
                 frame_id = rng.randint(0, length - 1)
                 # inputs
-                data_clip.append(np_load_frame(data_info_list[1]['frame'][frame_id], 384, 512))
-                data_clip.append(np_load_frame(data_info_list[2]['frame'][frame_id], 384, 512))
-                data_clip.append(np_load_frame(data_info_list[0]['frame'][frame_id], 384, 512))
+
+                input_img = np_load_frame(data_info_list[1]['frame'][frame_id], 384, 512)
+                mask_img = np_load_frame(data_info_list[2]['frame'][frame_id], 384, 512)
+                gt_img = np_load_frame(data_info_list[0]['frame'][frame_id], 384, 512)
+
+                data_clip.append(input_img)
+                data_clip.append(mask_img)
+                data_clip.append(gt_img)
+                data_clip = np.concatenate(data_clip, axis=2)
+
+                yield data_clip
+
+                # creating augmentations
+
+                data_clip = []
+
+                flipped_input = engine.flip_image(input_img)
+                flipped_mask = engine.flip_image(mask_img)
+                flipped_gt = engine.flip_image(gt_img)
+
+                data_clip.append(flipped_input)
+                data_clip.append(flipped_mask)
+                data_clip.append(flipped_gt)
+                data_clip = np.concatenate(data_clip, axis=2)
+
+                yield data_clip
+
+                data_clip = []
+
+                blurred_input = engine.blur_image(input_img)
+                blurred_mask = engine.blur_image(mask_img)
+                blurred_gt = engine.blur_image(gt_img)
+
+                data_clip.append(blurred_input)
+                data_clip.append(blurred_mask)
+                data_clip.append(blurred_gt)
                 data_clip = np.concatenate(data_clip, axis=2)
 
                 yield data_clip

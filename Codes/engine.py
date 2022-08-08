@@ -1,62 +1,44 @@
+import tensorflow as tf
+import matplotlib.pyplot as plt
 import cv2.cv2 as cv2
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib
 
 
-# receive two images and create augmented images
-def augment_images(input_img, output_img, mask):
-    # flip
-    input_img_flip = np.fliplr(input_img)
-    output_img_flip = np.fliplr(output_img)
-    mask_flip = np.fliplr(mask)
-
-    return input_img_flip, output_img_flip, mask_flip
+def change_brightness(image, delta):
+    image = tf.cast(image, tf.float32)
+    image = tf.image.resize(image, [256, 256])
+    image = (image / 255.0)
+    image = tf.image.adjust_brightness(image, delta=delta)
+    return image
 
 
-# extract image mesh
-def extract_mesh(input_img, output_img, mask):
-    # extract mesh
-    input_img_mesh = input_img[:, :, 0:3]
-    output_img_mesh = output_img[:, :, 0:3]
-    mask_mesh = mask[:, :, 0:3]
+def blur_image(_img):
+    return cv2.GaussianBlur(_img, (5, 5), 0)
 
-    return input_img_mesh, output_img_mesh, mask_mesh
+
+def cropped_image(_img, x1, x2, y1, y2):
+    return _img[x1:x2, y1:y2]
+
+
+def flip_image(_img):
+    return np.fliplr(_img)
 
 
 if __name__ == "__main__":
-    print(matplotlib.__version__)
-    exit(0)
-    data = []
-    for i in range(10):
-        data.append(("../DIR-D/training/input/0000{}.jpg".format(i), "../DIR-D/training/output/0000{}.jpg".format(i),
-                    "../DIR-D/training/mask/0000{}.jpg".format(i)))
+    img = cv2.imread("training/gt/00001.jpg")
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # res, lab = augment(img, 'test')
+    # plt.imshow(res)
+    # plt.show()
 
-    for input_img, output_img, mask_img in data:
-        input_img = cv2.imread(input_img)
-        output_img = cv2.imread(output_img)
-        mask = cv2.imread(mask_img)
+    # res = blur_image(img)
+    # plt.imshow(res)
+    # plt.show()
 
-        # input_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2RGB)
-        # output_img = cv2.cvtColor(output_img, cv2.COLOR_BGR2RGB)
-        # mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
-        #
-        # new_input, new_output, new_mask = augment_images(input_img, output_img, mask)
+    # res = cropped_image(img, 20, 500, 0, 200)
+    # plt.imshow(res)
+    # plt.show()
 
-        plt.figure()
-        plt.subplot(1, 4, 1)
-        plt.imshow(input_img, cmap='Accent')
-        plt.subplot(1, 4, 2)
-        plt.imshow(output_img, cmap='Accent')
-        plt.subplot(1, 4, 3)
-        # plt.imshow(new_input)
-        # plt.subplot(1, 4, 4)
-        # plt.imshow(new_output)
-        plt.show()
-
-    a = cv2.imread('../DIR-D/training/input/0.jpg')
-    a = cv2.cvtColor(a, cv2.COLOR_BGR2RGB)
-    cv2.imshow('a', a)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
+    res = change_brightness(img, 0)
+    plt.imshow(res)
+    plt.show()
