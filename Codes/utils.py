@@ -52,19 +52,6 @@ class DataLoader(object):
 
                 yield data_clip
 
-                data_clip = []
-
-                blurred_input = engine.blur_image(input_img)
-                blurred_mask = engine.blur_image(mask_img)
-                blurred_gt = engine.blur_image(gt_img)
-
-                data_clip.append(blurred_input)
-                data_clip.append(blurred_mask)
-                data_clip.append(blurred_gt)
-                data_clip = np.concatenate(data_clip, axis=2)
-
-                yield data_clip
-
         dataset = tf.data.Dataset.from_generator(generator=data_clip_generator, output_types=tf.float32,
                                                  output_shapes=[384, 512, 9])
 

@@ -1,19 +1,5 @@
-import tensorflow as tf
-import matplotlib.pyplot as plt
 import cv2.cv2 as cv2
 import numpy as np
-
-
-def change_brightness(image, delta):
-    image = tf.cast(image, tf.float32)
-    image = tf.image.resize(image, [256, 256])
-    image = (image / 255.0)
-    image = tf.image.adjust_brightness(image, delta=delta)
-    return image
-
-
-def blur_image(_img):
-    return cv2.GaussianBlur(_img, (5, 5), 0)
 
 
 def cropped_image(_img, x1, x2, y1, y2):
@@ -38,7 +24,3 @@ if __name__ == "__main__":
     # res = cropped_image(img, 20, 500, 0, 200)
     # plt.imshow(res)
     # plt.show()
-
-    res = change_brightness(img, 0)
-    plt.imshow(res)
-    plt.show()
