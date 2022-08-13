@@ -5,7 +5,6 @@ import sys
 import os
 import glob
 import cv2
-import engine
 
 rng = np.random.RandomState(2017)
 
@@ -41,9 +40,9 @@ class DataLoader(object):
 
                 data_clip = []
 
-                flipped_input = engine.flip_image(input_img)
-                flipped_mask = engine.flip_image(mask_img)
-                flipped_gt = engine.flip_image(gt_img)
+                flipped_input = np.fliplr(input_img)
+                flipped_mask = np.fliplr(mask_img)
+                flipped_gt = np.fliplr(gt_img)
 
                 data_clip.append(flipped_input)
                 data_clip.append(flipped_mask)
