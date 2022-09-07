@@ -1,9 +1,11 @@
 import tensorflow as tf
 import numpy as np
 from collections import OrderedDict
+import sys
 import os
 import glob
 import cv2
+import engine
 
 rng = np.random.RandomState(2017)
 
@@ -32,6 +34,7 @@ class DataLoader(object):
 
         dataset = tf.data.Dataset.from_generator(generator=data_clip_generator, output_types=tf.float32,
                                                  output_shapes=[384, 512, 9])
+
         print('generator dataset, {}'.format(dataset))
         dataset = dataset.prefetch(buffer_size=128)
         dataset = dataset.shuffle(buffer_size=128).batch(batch_size)
@@ -46,7 +49,12 @@ class DataLoader(object):
     def setup(self):
         datas = glob.glob(os.path.join(self.dir, '*'))
         for data in sorted(datas):
-            data_name = data.split('/')[-1]
+
+            if sys.platform[:3] == 'win':
+                data_name = data.split('\\')[-1]
+            else:
+                data_name = data.split('/')[-1]
+
             if data_name == 'gt' or data_name == 'input' or data_name == 'mask':
                 self.datas[data_name] = {}
                 self.datas[data_name]['path'] = data
@@ -69,10 +77,12 @@ class DataLoader(object):
 
 def np_load_frame(filename, resize_height, resize_width):
     image_decoded = cv2.imread(filename)
-    if resize_height != None:
+
+    if resize_height is not None:
         image_resized = cv2.resize(image_decoded, (resize_width, resize_height))
     else:
         image_resized = image_decoded
+
     image_resized = image_resized.astype(dtype=np.float32)
     image_resized = (image_resized / 127.5) - 1.0
     return image_resized
