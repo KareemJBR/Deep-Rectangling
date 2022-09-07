@@ -1,15 +1,19 @@
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import cv2 as cv2
+from random import randint
 import numpy as np
 
 
-def change_brightness(image, delta):
+def change_brightness(image, delta=None):
     image = tf.cast(image, tf.float32)
     image = tf.image.resize(image, [256, 256])
-    image = (image / 255.0)
-    image = tf.image.adjust_brightness(image, delta=delta)
-    return image
+    image = tf.image.adjust_brightness(image, delta=randint(20, 100))
+    init = tf.global_variables_initializer()
+    sess = tf.Session()
+    sess.run(init)
+    image = sess.run(image)
+    return image/255
 
 
 def blur_image(_img):

@@ -43,32 +43,32 @@ def plot_results(_input, _gt, _mask, new_input, new_gt, new_mask, aug_func):
     ax11.imshow(_input)
     ax12.imshow(_gt)
     ax13.imshow(_mask)
-    ax11.imshow(new_input)
-    ax12.imshow(new_gt)
-    ax13.imshow(new_mask)
+    ax21.imshow(new_input)
+    ax22.imshow(new_gt)
+    ax23.imshow(new_mask)
 
     plt.show()
 
 
 def generate_augmented_img(input_img, gt_image, mask):
-    augmentations = ['blur_image', 'cropped_image', 'flip_image', 'change_brightness']
-    match augmentations[randint(0, 3)]:
-        case 'blur_image':
-            return functions.blur_image(input_img), functions.blur_image(gt_image), functions.blur_image(
-                mask), 'blurred image'
-        case 'cropped_image':  # TODO genrate modern frame for cropping
-            return functions.cropped_image(input_img, 20, 500, 0, 200), functions.cropped_image(gt_image, 20, 500, 0,
-                                                                                                200), functions.cropped_image(
-                mask), 20, 500, 0, 200, 'cropped image'
-        case 'flip_image':
-            return functions.flip_image(input_img), functions.flip_image(gt_image), functions.flip_image(
-                mask), 'flip image'
-        case 'change_brightness':
-            return functions.change_brightness(input_img), functions.change_brightness(
-                gt_image), functions.change_brightness(
-                mask), 'change brightness'
-        case _:
-            return "something"
+    augmentations1 = ['blur_image', 'cropped_image', 'flip_image', 'change_brightness']
+    randfunc = randint(0, 3)
+    print(augmentations1[randfunc])
+    if augmentations1[randfunc] is 'blur_image':
+        return functions.blur_image(input_img), functions.blur_image(gt_image), functions.blur_image(
+            mask), 'blurred image'
+    elif augmentations1[randfunc] is 'cropped_image':  # TODO genrate modern frame for cropping
+        return functions.cropped_image(input_img, 20, 500, 0, 200), functions.cropped_image(gt_image, 20, 500, 0,
+                                                                                            200), functions.cropped_image(mask, 20, 500, 0, 200), 'cropped image'
+    elif augmentations1[randfunc] is 'flip_image':
+        return functions.flip_image(input_img), functions.flip_image(gt_image), functions.flip_image(
+            mask), 'flip image'
+    elif augmentations1[randfunc] is 'change_brightness':
+        return functions.change_brightness(input_img,None), functions.change_brightness(
+            gt_image,None), functions.change_brightness(
+            mask,None), 'change brightness'
+    else:
+        return "something"
 
 
 if __name__ == "__main__":
@@ -86,5 +86,20 @@ if __name__ == "__main__":
         gt_image = cv2.imread(gt_)
         mask = cv2.imread(mask_)
 
-        new_input, new_gt, new_mask, aug_func = augment_images(input_img, gt_image, mask)
+        # fig = plt.figure()
+        # plt.title('flip_image')
+        # ax11 = fig.add_subplot(231)
+        # ax12 = fig.add_subplot(232)
+        # ax13 = fig.add_subplot(233)
+        #
+        # ax11.title.set_text('input img')
+        # ax12.title.set_text('gt img')
+        # ax13.title.set_text('mask img')
+        #
+        # ax11.imshow(functions.change_brightness(input_img))
+        # ax12.imshow(input_img)
+        # ax13.imshow(functions.change_brightness(mask))
+        # plt.show()
+
+        new_input, new_gt, new_mask, aug_func = generate_augmented_img(input_img, gt_image, mask)
         plot_results(input_img, gt_image, mask, new_input, new_gt, new_mask, aug_func)
