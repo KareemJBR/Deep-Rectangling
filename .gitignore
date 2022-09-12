@@ -281,6 +281,8 @@ Codes/vgg19/imagenet-vgg-verydeep-19.mat
 # pretrained model
 Codes_for_Arbitrary_Resolution/checkpoints/pretrained_model/
 
+video/
+
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
