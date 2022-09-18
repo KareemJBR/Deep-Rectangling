@@ -5,7 +5,6 @@ import sys
 import os
 import glob
 import cv2
-import engine
 
 rng = np.random.RandomState(2017)
 

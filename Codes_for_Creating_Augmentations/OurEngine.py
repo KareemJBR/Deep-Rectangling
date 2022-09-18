@@ -54,7 +54,7 @@ def generate_augmented_img(input_img, gt_image, mask):
     augmentations1 = ['blur_image', 'cropped_image', 'flip_image', 'change_brightness']
     randfunc = randint(0, 3)
     print(augmentations1[randfunc])
-    if augmentations1[randfunc] is 'blur_image':
+    if augmentations1[randfunc] is 'blur_image': #TODO keep in touch
         return functions.blur_image(input_img), functions.blur_image(gt_image), functions.blur_image(
             mask), 'blurred image'
     elif augmentations1[randfunc] is 'cropped_image':  # TODO genrate modern frame for cropping
@@ -63,7 +63,7 @@ def generate_augmented_img(input_img, gt_image, mask):
     elif augmentations1[randfunc] is 'flip_image':
         return functions.flip_image(input_img), functions.flip_image(gt_image), functions.flip_image(
             mask), 'flip image'
-    elif augmentations1[randfunc] is 'change_brightness':
+    elif augmentations1[randfunc] is 'change_brightness': #TODO keep in touch
         return functions.change_brightness(input_img,None), functions.change_brightness(
             gt_image,None), functions.change_brightness(
             mask,None), 'change brightness'
