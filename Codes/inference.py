@@ -8,6 +8,7 @@ from model import RectanglingNetwork
 from utils import load, DataLoader
 from skimage import metrics
 
+
 os.environ['CUDA_DEVICES_ORDER'] = "PCI_BUS_ID"
 os.environ['CUDA_VISIBLE_DEVICES'] = constant.GPU
 
