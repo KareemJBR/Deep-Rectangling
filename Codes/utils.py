@@ -71,6 +71,7 @@ class DataLoader(object):
         batch.append(np_load_frame(data_info_list[2]['frame'][index], 384, 512))
         batch.append(np_load_frame(data_info_list[0]['frame'][index], 384, 512))
 
+
         return np.concatenate(batch, axis=2)
 
 
