@@ -64,7 +64,7 @@ def generate_augmented_img(input_img, gt_image, mask):
         return functions.flip_image(input_img), functions.flip_image(gt_image), functions.flip_image(
             mask), 'flip image'
     elif augmentations1[randfunc] is 'change_brightness': #TODO keep in touch
-        return functions.change_brightness(input_img,None), functions.change_brightness(
+        return functions.change_brightness(input_img, None), functions.change_brightness(
             gt_image,None), functions.change_brightness(
             mask,None), 'change brightness'
     else:

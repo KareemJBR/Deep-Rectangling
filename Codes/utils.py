@@ -5,6 +5,7 @@ import sys
 import os
 import glob
 import cv2
+from OurDrawMesh import get_cropped
 
 rng = np.random.RandomState(2017)
 
@@ -23,10 +24,88 @@ class DataLoader(object):
             while True:
                 data_clip = []
                 frame_id = rng.randint(0, length - 1)
-                #######inputs
-                data_clip.append(np_load_frame(data_info_list[1]['frame'][frame_id], 384, 512))
-                data_clip.append(np_load_frame(data_info_list[2]['frame'][frame_id], 384, 512))
-                data_clip.append(np_load_frame(data_info_list[0]['frame'][frame_id], 384, 512))
+                # inputs
+
+                input_img = np_load_frame(data_info_list[1]['frame'][frame_id], 384, 512)
+                mask_img = np_load_frame(data_info_list[2]['frame'][frame_id], 384, 512)
+                gt_img = np_load_frame(data_info_list[0]['frame'][frame_id], 384, 512)
+
+                data_clip.append(input_img)
+                data_clip.append(mask_img)
+                data_clip.append(gt_img)
+                data_clip = np.concatenate(data_clip, axis=2)
+
+                yield data_clip
+
+                # creating augmentations
+
+                data_clip = []
+
+                flipped_input = np.fliplr(input_img)
+                flipped_mask = np.fliplr(mask_img)
+                flipped_gt = np.fliplr(gt_img)
+
+                data_clip.append(flipped_input)
+                data_clip.append(flipped_mask)
+                data_clip.append(flipped_gt)
+                data_clip = np.concatenate(data_clip, axis=2)
+
+                yield data_clip
+
+                # first crop window
+
+                data_clip = []
+
+                cropped_input, cropped_gt, cropped_mask = \
+                    get_cropped('./checkpoints/pretrained_model/model.ckpt-100000', frame_id, [0, 0], [3, 8])
+
+                data_clip.append(cropped_input)
+                data_clip.append(cropped_mask)
+                data_clip.append(cropped_gt)
+
+                data_clip = np.concatenate(data_clip, axis=2)
+
+                yield data_clip
+
+                # second crop window
+
+                data_clip = []
+
+                cropped_input, cropped_gt, cropped_mask = \
+                    get_cropped('./checkpoints/pretrained_model/model.ckpt-100000', frame_id, [3, 0], [6, 8])
+
+                data_clip.append(cropped_input)
+                data_clip.append(cropped_mask)
+                data_clip.append(cropped_gt)
+
+                data_clip = np.concatenate(data_clip, axis=2)
+
+                yield data_clip
+
+                # third crop window
+
+                data_clip = []
+
+                cropped_input, cropped_gt, cropped_mask = \
+                    get_cropped('./checkpoints/pretrained_model/model.ckpt-100000', frame_id, [0, 0], [6, 4])
+
+                data_clip.append(cropped_input)
+                data_clip.append(cropped_mask)
+                data_clip.append(cropped_gt)
+                data_clip = np.concatenate(data_clip, axis=2)
+
+                yield data_clip
+
+                # fourth crop window
+
+                data_clip = []
+
+                cropped_input, cropped_gt, cropped_mask = \
+                    get_cropped('./checkpoints/pretrained_model/model.ckpt-100000', frame_id, [0, 4], [6, 8])
+
+                data_clip.append(cropped_input)
+                data_clip.append(cropped_mask)
+                data_clip.append(cropped_gt)
                 data_clip = np.concatenate(data_clip, axis=2)
 
                 yield data_clip
@@ -71,7 +150,6 @@ class DataLoader(object):
         batch.append(np_load_frame(data_info_list[2]['frame'][index], 384, 512))
         batch.append(np_load_frame(data_info_list[0]['frame'][index], 384, 512))
 
-
         return np.concatenate(batch, axis=2)
 
 
@@ -101,7 +179,3 @@ def save(saver, sess, logdir, step):
         os.makedirs(logdir)
     saver.save(sess, checkpoint_path, global_step=step)
     print('The checkpoint has been created.')
-
-
-
-

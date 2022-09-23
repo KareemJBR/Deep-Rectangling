@@ -289,3 +289,5 @@ Codes_for_Arbitrary_Resolution/checkpoints/pretrained_model/
 #.idea/
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm,python
+*.xml
+*.iml

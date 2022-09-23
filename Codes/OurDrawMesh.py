@@ -2,19 +2,14 @@ import tensorflow as tf
 import os
 import numpy as np
 import cv2 as cv
-import functions
-import matplotlib.pyplot as plt
-import shapely
-from shapely.geometry import LineString, Point
 import sys
+
+from utils import load, DataLoader
+from model import RectanglingNetwork
+import constant
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(CURRENT_DIR))
-# sys.path.insert(1, '../Codes')
-
-from Codes.utils import load, DataLoader
-from Codes.model import RectanglingNetwork
-from Codes import constant
 
 os.environ['CUDA_DEVICES_ORDER'] = "PCI_BUS_ID"
 os.environ['CUDA_VISIBLE_DEVICES'] = constant.GPU
@@ -26,12 +21,6 @@ grid_h = constant.GRID_H
 
 
 def draw_mesh_on_warp(warp, f_local, A, B):
-    # f_local[3,0,0] = f_local[3,0,0] - 2
-    # f_local[4,0,0] = f_local[4,0,0] - 4
-    # f_local[5,0,0] = f_local[5,0,0] - 6
-    # f_local[6,0,0] = f_local[6,0,0] - 8
-    # f_local[6,0,1] = f_local[6,0,1] + 7
-
     min_w = np.minimum(np.min(f_local[:, :, 0]), 0).astype(np.int32)
     max_w = np.maximum(np.max(f_local[:, :, 0]), 512).astype(np.int32)
     min_h = np.minimum(np.min(f_local[:, :, 1]), 0).astype(np.int32)
@@ -63,29 +52,20 @@ def draw_mesh_on_warp(warp, f_local, A, B):
                         constant.BLUE, thickness, line_type)
                 pts_ls.append((f_local[i, j, 0], f_local[i, j, 1]))
                 pts_ls.append((f_local[i + 1, j, 0], f_local[i + 1, j, 1]))
-                # cv.circle(warp, (f_local[i, j, 0], f_local[i, j, 1]), radius=5, color=(0, 0, 255), thickness=3)
-                # cv.circle(warp, (f_local[i + 1, j, 0], f_local[i + 1, j, 1]), radius=3, color=(0, 0, 255), thickness=5)
             elif i == grid_h or i == B[0]:
                 cv.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i, j + 1, 0], f_local[i, j + 1, 1]),
                         constant.BLUE, thickness, line_type)
                 pts_ls.append((f_local[i, j, 0], f_local[i, j, 1]))
                 pts_ls.append((f_local[i, j + 1, 0], f_local[i, j + 1, 1]))
-                # cv.circle(warp, (f_local[i, j, 0], f_local[i, j, 1]), radius=5, color=(0, 0, 255), thickness=3)
-                # cv.circle(warp, (f_local[i, j + 1, 0], f_local[i, j + 1, 1]), radius=3, color=(0, 0, 255), thickness=5)
             else:
                 cv.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i + 1, j, 0], f_local[i + 1, j, 1]),
                         constant.BLUE, thickness, line_type)
                 pts_ls.append((f_local[i, j, 0], f_local[i, j, 1]))
                 pts_ls.append((f_local[i + 1, j, 0], f_local[i + 1, j, 1]))
-                # cv.circle(warp, (f_local[i, j, 0], f_local[i, j, 1]), radius=5, color=(0, 0, 255), thickness=3)
-                # cv.circle(warp, (f_local[i + 1, j, 0], f_local[i + 1, j, 1]), radius=3, color=(0, 0, 255), thickness=5)
-
                 cv.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i, j + 1, 0], f_local[i, j + 1, 1]),
                         constant.BLUE, thickness, line_type)
                 pts_ls.append((f_local[i, j, 0], f_local[i, j, 1]))
                 pts_ls.append((f_local[i, j + 1, 0], f_local[i, j + 1, 1]))
-                # cv.circle(warp, (f_local[i, j, 0], f_local[i, j, 1]), radius=5, color=(0, 0, 255), thickness=5)
-                # cv.circle(warp, (f_local[i, j + 1, 0], f_local[i, j + 1, 1]), radius=3, color=(0, 0, 255), thickness=3)
 
     return warp, pts_ls
 
@@ -109,7 +89,7 @@ with tf.name_scope('dataset'):
 with tf.variable_scope('generator', reuse=None):
     print('testing = {}'.format(tf.get_variable_scope().name))
     test_mesh_primary, test_warp_image_primary, test_warp_mask_primary, test_mesh_final, test_warp_image_final, \
-    test_warp_mask_final = RectanglingNetwork(test_input, test_mask)
+        test_warp_mask_final = RectanglingNetwork(test_input, test_mask)
 
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
@@ -141,7 +121,7 @@ with tf.Session(config=config) as sess:
     def cropByMesh(input_image, mesh_image, input_mask, gt_img):
         # create the mask
         mask = cv.inRange(mesh_image, constant.BLUE, constant.BLUE)
-        cv.imwrite("mask.jpg",mask)
+        cv.imwrite("mask.jpg", mask)
         # get bounds of white pixels
         white = np.where(mask == 255)
         xmin, ymin, xmax, ymax = np.min(white[1]), np.min(white[0]), np.max(white[1]), np.max(white[0])
@@ -208,63 +188,6 @@ with tf.Session(config=config) as sess:
         return withborder
 
 
-    # def inference_func(ckpt):
-    #     print("============")
-    #     print(ckpt)
-    #     load(loader, sess, ckpt)
-    #     print("============")
-    #     length = 4  # len(os.listdir(test_folder+"/input"))
-    #
-    #     for i in range(0, length):
-    #         input_clip = np.expand_dims(input_loader.get_data_clips(i), axis=0)
-    #         # plt.figure()
-    #         # plt.imshow((input_clip[0, :, :, 6:9] + 1))
-    #         # # plt.plot(xs, ys)
-    #         # plt.show()
-    #
-    #         mesh_primary, warp_image_primary, warp_mask_primary, mesh_final, warp_image_final, warp_mask_final = \
-    #             sess.run([test_mesh_primary, test_warp_image_primary, test_warp_mask_primary, test_mesh_final,
-    #                       test_warp_image_final, test_warp_mask_final],
-    #                      feed_dict={test_inputs_clips_tensor: input_clip})
-    #
-    #         print(mesh_primary.shape)
-    #         print(mesh_primary)
-    #         mesh = mesh_final[0]
-    #         input_image = (input_clip[0, :, :, 0:3] + 1) / 2 * 255
-    #         gt_img = (input_clip[0, :, :, 6:9] + 1) / 2 * 255
-    #
-    #         source_input_img = (input_clip[0, :, :, 0:3] + 1) / 2 * 255
-    #         # gt_img = draw_grid(gt_img)
-    #         # gt_img, pts = draw_mesh_on_warp(gt_img, mesh_primary[0], [0, 0], [6, 8])
-    #         mesh_input_img, pts = draw_mesh_on_warp(input_image, mesh, [0, 0], [3, 3])
-    #         mask_input, pts = draw_mesh_on_warp(np.ones([384, 512, 3], np.int32) * 255, mesh, [0, 0], [3, 3])
-    #
-    #         cropped_img, cropped_mesh, cropped_mask, cropped_gt = cropByMesh(source_input_img, mesh_input_img,
-    #                                                                          np.ones([384, 512, 3], np.int32) * 255,
-    #                                                                          gt_img)
-    #         # cropped_img = add_borders_and_resize(cropped_img, 'input')
-    #         # cropped_mask = add_borders_and_resize(cropped_mask, 'mask')
-    #         # cropped_gt = add_borders_and_resize(cropped_gt, 'gt')
-    #
-    #         gt_path = "./Our_Final_GT/" + str(i + 1).zfill(5) + ".jpg"
-    #         input_path = "./Our_Final_Input/" + str(i + 1).zfill(5) + ".jpg"
-    #         mask_path = "./Our_Final_Mask/" + str(i + 1).zfill(5) + ".jpg"
-    #
-    #         cv.imwrite(gt_path, cropped_gt)
-    #         cv.imwrite(input_path, cropped_img)
-    #         cv.imwrite(mask_path, cropped_mask)
-    #
-    #         # plt.figure()
-    #         # plt.imshow(input_clip)
-    #         # # plt.plot(xs, ys)
-    #         # plt.show()
-    #
-    #         # input_path = "../mesh_mask/" + str(i+1).zfill(5) + ".jpg"
-    #         # cv.imwrite(input_path, input_mask)
-    #
-    #         print('i = {} / {}'.format(i + 1, length))
-
-
     def get_cropped(ckpt, index, A, B):
         print("====================tom tst st tst sts  ta  tach tach====")
         print(ckpt)
@@ -285,56 +208,10 @@ with tf.Session(config=config) as sess:
         mask_img = (input_clip[0, :, :, 3:6] + 1) / 2 * 255
 
         source_input_img = (input_clip[0, :, :, 0:3] + 1) / 2 * 255
-        mesh_input_img, pts = draw_mesh_on_warp(input_image, mesh, A,B)
-
+        mesh_input_img, pts = draw_mesh_on_warp(input_image, mesh, A, B)
 
         cropped_img, cropped_mesh, cropped_mask, cropped_gt = cropByMesh(source_input_img, mesh_input_img,
-                                                                         mask_img ,
+                                                                         mask_img,
                                                                          gt_img)
-        # cropped_img = add_borders_and_resize(cropped_img, 'input')
-        # cropped_mask = add_borders_and_resize(cropped_mask, 'mask')
-        # cropped_gt = add_borders_and_resize(cropped_gt, 'gt')
-        print('i = {} / {}'.format(index + 1, 0000))
 
-        gt_path = "./Our_Final_GT/" + str(index + 1).zfill(5) + ".jpg"
-        input_path = "./Our_Final_Input/" + str(index + 1).zfill(5) + ".jpg"
-        mask_path = "./Our_Final_Mask/" + str(index + 1).zfill(5) + ".jpg"
-
-        cv.imwrite(gt_path, cropped_gt)
-        cv.imwrite(input_path, cropped_img)
-        cv.imwrite(mask_path, cropped_mask)
-
-        return
-
-        # plt.figure()
-        # plt.imshow(input_clip)
-        # # plt.plot(xs, ys)
-        # plt.show()
-
-        # input_path = "../mesh_mask/" + str(i+1).zfill(5) + ".jpg"
-        # cv.imwrite(input_path, input_mask)
-
-
-
-
-    # inference_func(snapshot_dir)
-
-    # get_cropped(snapshot_dir,3,[0,0],[3,4])
-    get_cropped(snapshot_dir, 3, [3, 0], [6, 8])
-
-    # fig = plt.figure()
-    # plt.title('tom ta ta toch tch ')
-    # ax11 = fig.add_subplot(231)
-    # ax12 = fig.add_subplot(232)
-    # ax13 = fig.add_subplot(233)
-    #
-    # ax11.title.set_text('input img')
-    # ax12.title.set_text('gt img')
-    # ax13.title.set_text('mask img')
-    #
-    #
-    # ax11.imshow(cropped_img)
-    # ax12.imshow(cropped_gt)
-    # ax13.imshow(cropped_mask)
-
-    plt.show()
+        return cropped_img, cropped_gt, cropped_mask

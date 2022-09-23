@@ -1,10 +1,10 @@
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 from tensorflow.contrib.layers import conv2d
-from . import tf_spatial_transform_local
-from . import tf_spatial_transform_local_feature
+import tf_spatial_transform_local
+import tf_spatial_transform_local_feature
 
-from . import constant
+import constant
 
 grid_w = constant.GRID_W
 grid_h = constant.GRID_H
