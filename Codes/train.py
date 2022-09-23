@@ -105,7 +105,7 @@ else:
     final_appearance_loss = tf.constant(0.0, dtype=tf.float32)
     appearance_loss = primary_appearance_loss + final_appearance_loss
 
-# define perception loss (loss 2 of of the content term)
+# define perception loss (loss 2 of the content term)
 primary_features_warp = build_vgg19((train_warp_image_primary + 1) * 127.5, reuse=False)
 final_features_warp = build_vgg19((train_warp_image_final + 1) * 127.5, reuse=True)
 features_gt = build_vgg19((train_gt + 1) * 127.5, reuse=True)

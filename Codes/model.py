@@ -3,7 +3,6 @@ import tensorflow.contrib.slim as slim
 from tensorflow.contrib.layers import conv2d
 import tf_spatial_transform_local
 import tf_spatial_transform_local_feature
-
 import constant
 
 grid_w = constant.GRID_W
@@ -25,10 +24,7 @@ def shift2mesh(mesh_shift, width, height):
     ori_pt = tf.reshape(ori_pt, [grid_h + 1, grid_w + 1, 2])
     ori_pt = tf.tile(tf.expand_dims(ori_pt, 0), [batch_size, 1, 1, 1])
 
-    tar_pt = ori_pt + mesh_shift
-    # tar_pt = tf.reshape(tar_pt, [batch_size, grid_h+1, grid_w+1, 2])
-
-    return tar_pt
+    return ori_pt + mesh_shift
 
 
 def rectangling_network(train_input, train_mask, width=512., height=384.):
@@ -42,7 +38,6 @@ def rectangling_network(train_input, train_mask, width=512., height=384.):
     warp_image_final, warp_mask_final = tf_spatial_transform_local.transformer(train_input, train_mask, mesh_final)
 
     return mesh_primary, warp_image_primary, warp_mask_primary, mesh_final, warp_image_final, warp_mask_final
-
 
 # feature extraction module
 def feature_extractor(image_tf):
@@ -92,9 +87,7 @@ def regression_net(correlation):
     fc2 = conv2d(inputs=fc1, num_outputs=1024, kernel_size=1, activation_fn=tf.nn.relu)
     fc3 = conv2d(inputs=fc2, num_outputs=(grid_w + 1) * (grid_h + 1) * 2, kernel_size=1, activation_fn=None)
     # net3_f = tf.expand_dims(tf.squeeze(tf.squeeze(fc3,1),1), [2])
-    net3_f_local = tf.reshape(fc3, (-1, grid_h + 1, grid_w + 1, 2))
-
-    return net3_f_local
+    return tf.reshape(fc3, (-1, grid_h + 1, grid_w + 1, 2))
 
 
 def build_model(train_input, train_mask):

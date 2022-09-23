@@ -5,6 +5,7 @@ import sys
 import os
 import glob
 import cv2
+from OurDrawMesh import get_cropped
 
 rng = np.random.RandomState(2017)
 
@@ -40,6 +41,7 @@ class DataLoader(object):
 
                 data_clip = []
 
+                # flipped augmentation
                 flipped_input = np.fliplr(input_img)
                 flipped_mask = np.fliplr(mask_img)
                 flipped_gt = np.fliplr(gt_img)
@@ -51,59 +53,60 @@ class DataLoader(object):
 
                 yield data_clip
 
+                # cropped augmentations:
                 # first crop window
 
-                # data_clip = []
-                #
-                # cropped_input, cropped_gt, cropped_mask = get_cropped(frame_id, [0, 0], [3, 8])
-                #
-                # data_clip.append(cropped_input)
-                # data_clip.append(cropped_mask)
-                # data_clip.append(cropped_gt)
-                #
-                # data_clip = np.concatenate(data_clip, axis=2)
-                #
-                # yield data_clip
-                #
-                # # second crop window
-                #
-                # data_clip = []
-                #
-                # cropped_input, cropped_gt, cropped_mask = get_cropped(frame_id, [3, 0], [6, 8])
-                #
-                # data_clip.append(cropped_input)
-                # data_clip.append(cropped_mask)
-                # data_clip.append(cropped_gt)
-                #
-                # data_clip = np.concatenate(data_clip, axis=2)
-                #
-                # yield data_clip
-                #
-                # # third crop window
-                #
-                # data_clip = []
-                #
-                # cropped_input, cropped_gt, cropped_mask = get_cropped(frame_id, [0, 0], [6, 4])
-                #
-                # data_clip.append(cropped_input)
-                # data_clip.append(cropped_mask)
-                # data_clip.append(cropped_gt)
-                # data_clip = np.concatenate(data_clip, axis=2)
-                #
-                # yield data_clip
-                #
-                # # fourth crop window
-                #
-                # data_clip = []
-                #
-                # cropped_input, cropped_gt, cropped_mask = get_cropped(frame_id, [0, 4], [6, 8])
-                #
-                # data_clip.append(cropped_input)
-                # data_clip.append(cropped_mask)
-                # data_clip.append(cropped_gt)
-                # data_clip = np.concatenate(data_clip, axis=2)
-                #
-                # yield data_clip
+                data_clip = []
+
+                cropped_input, cropped_gt, cropped_mask = get_cropped(frame_id, [0, 0], [3, 8])
+
+                data_clip.append(cropped_input)
+                data_clip.append(cropped_mask)
+                data_clip.append(cropped_gt)
+
+                data_clip = np.concatenate(data_clip, axis=2)
+
+                yield data_clip
+
+                # second crop window
+
+                data_clip = []
+
+                cropped_input, cropped_gt, cropped_mask = get_cropped(frame_id, [3, 0], [6, 8])
+
+                data_clip.append(cropped_input)
+                data_clip.append(cropped_mask)
+                data_clip.append(cropped_gt)
+
+                data_clip = np.concatenate(data_clip, axis=2)
+
+                yield data_clip
+
+                # third crop window
+
+                data_clip = []
+
+                cropped_input, cropped_gt, cropped_mask = get_cropped(frame_id, [0, 0], [6, 4])
+
+                data_clip.append(cropped_input)
+                data_clip.append(cropped_mask)
+                data_clip.append(cropped_gt)
+                data_clip = np.concatenate(data_clip, axis=2)
+
+                yield data_clip
+
+                # fourth crop window
+
+                data_clip = []
+
+                cropped_input, cropped_gt, cropped_mask = get_cropped(frame_id, [0, 4], [6, 8])
+
+                data_clip.append(cropped_input)
+                data_clip.append(cropped_mask)
+                data_clip.append(cropped_gt)
+                data_clip = np.concatenate(data_clip, axis=2)
+
+                yield data_clip
 
         dataset = tf.data.Dataset.from_generator(generator=data_clip_generator, output_types=tf.float32,
                                                  output_shapes=[384, 512, 9])

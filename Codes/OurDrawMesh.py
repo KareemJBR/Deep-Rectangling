@@ -7,7 +7,6 @@ from entities import draw_mesh_on_warp
 def crop_by_mesh(input_image, mesh_image, input_mask, gt_img):
     # create the mask
     mask = cv.inRange(mesh_image, constant.BLUE, constant.BLUE)
-    cv.imwrite("mask.jpg", mask)
     # get bounds of white pixels
     white = np.where(mask == 255)
     x_min, y_min, x_max, y_max = np.min(white[1]), np.min(white[0]), np.max(white[1]), np.max(white[0])
@@ -48,16 +47,18 @@ def draw_grid(img):
     return img
 
 
+def get_image_mesh(img):
+    pass
+
+
 def get_cropped(index, top_left, bottom_right):
 
     input_image = cv.imread("./DIR-D/training/input/0000" + str(index) + ".jpg")
     gt_image = cv.imread("./DIR-D/training/gt/0000" + str(index) + ".jpg")
     mask_image = cv.imread("./DIR-D/training/mask/0000" + str(index) + ".jpg")
+    mesh = get_image_mesh(input_image)
 
-    # TODO: might be unnecessary
     source_input_img = cv.imread("./DIR-D/training/input/0000" + str(index) + ".jpg")
-
-    # TODO: find the mesh and that is it
     mesh_input_img, pts = draw_mesh_on_warp(input_image, mesh, top_left, bottom_right)
 
     cropped_img, cropped_mesh, cropped_mask, cropped_gt = crop_by_mesh(source_input_img, mesh_input_img,
