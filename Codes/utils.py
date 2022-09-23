@@ -56,8 +56,7 @@ class DataLoader(object):
 
                 data_clip = []
 
-                cropped_input, cropped_gt, cropped_mask = \
-                    get_cropped('./checkpoints/pretrained_model/model.ckpt-100000', frame_id, [0, 0], [3, 8])
+                cropped_input, cropped_gt, cropped_mask = get_cropped(frame_id, [0, 0], [3, 8])
 
                 data_clip.append(cropped_input)
                 data_clip.append(cropped_mask)
@@ -71,8 +70,7 @@ class DataLoader(object):
 
                 data_clip = []
 
-                cropped_input, cropped_gt, cropped_mask = \
-                    get_cropped('./checkpoints/pretrained_model/model.ckpt-100000', frame_id, [3, 0], [6, 8])
+                cropped_input, cropped_gt, cropped_mask = get_cropped(frame_id, [3, 0], [6, 8])
 
                 data_clip.append(cropped_input)
                 data_clip.append(cropped_mask)
@@ -86,8 +84,7 @@ class DataLoader(object):
 
                 data_clip = []
 
-                cropped_input, cropped_gt, cropped_mask = \
-                    get_cropped('./checkpoints/pretrained_model/model.ckpt-100000', frame_id, [0, 0], [6, 4])
+                cropped_input, cropped_gt, cropped_mask = get_cropped(frame_id, [0, 0], [6, 4])
 
                 data_clip.append(cropped_input)
                 data_clip.append(cropped_mask)
@@ -100,8 +97,7 @@ class DataLoader(object):
 
                 data_clip = []
 
-                cropped_input, cropped_gt, cropped_mask = \
-                    get_cropped('./checkpoints/pretrained_model/model.ckpt-100000', frame_id, [0, 4], [6, 8])
+                cropped_input, cropped_gt, cropped_mask = get_cropped(frame_id, [0, 4], [6, 8])
 
                 data_clip.append(cropped_input)
                 data_clip.append(cropped_mask)

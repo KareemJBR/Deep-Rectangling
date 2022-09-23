@@ -31,7 +31,7 @@ def shift2mesh(mesh_shift, width, height):
     return tar_pt
 
 
-def RectanglingNetwork(train_input, train_mask, width=512., height=384.):
+def rectangling_network(train_input, train_mask, width=512., height=384.):
     mesh_shift_primary, mesh_shift_final = build_model(train_input, train_mask)
 
     mesh_primary = shift2mesh(mesh_shift_primary, width, height)
@@ -72,7 +72,7 @@ def feature_extractor(image_tf):
 
 
 # mesh motion regression module
-def regression_Net(correlation):
+def regression_net(correlation):
     conv1 = conv2d(inputs=correlation, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
     conv1 = conv2d(inputs=conv1, num_outputs=256, kernel_size=3, activation_fn=tf.nn.relu)
 
@@ -105,11 +105,11 @@ def build_model(train_input, train_mask):
 
         feature = tf.image.resize_images(features[-1], [24, 32], method=0)
         with tf.variable_scope('regression_coarse', reuse=None):
-            mesh_shift_primary = regression_Net(feature)
+            mesh_shift_primary = regression_net(feature)
 
         with tf.variable_scope('regression_fine', reuse=None):
             mesh_primary = shift2mesh(mesh_shift_primary / 16, 32., 24.)
             feature_warp = tf_spatial_transform_local_feature.transformer(feature, mesh_primary)
-            mesh_shift_final = regression_Net(feature_warp)
+            mesh_shift_final = regression_net(feature_warp)
 
         return mesh_shift_primary, mesh_shift_final

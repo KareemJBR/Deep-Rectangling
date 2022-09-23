@@ -1,6 +1,6 @@
 import tensorflow as tf
 import os
-from model import RectanglingNetwork
+from model import rectangling_network
 from loss_functions import intensity_loss, intra_grid_loss, inter_grid_loss
 from utils import load, save, DataLoader
 import numpy as np
@@ -92,7 +92,7 @@ with tf.name_scope('dataset'):
 with tf.variable_scope('generator', reuse=None):
     print('training = {}'.format(tf.get_variable_scope().name))
     train_mesh_primary, train_warp_image_primary, train_warp_mask_primary, train_mesh_final, train_warp_image_final, \
-        train_warp_mask_final = RectanglingNetwork(train_input, train_mask)
+        train_warp_mask_final = rectangling_network(train_input, train_mask)
 
 # define appearance loss (loss 1 of of the content term)
 lam_appearance = 1

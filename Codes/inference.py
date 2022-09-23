@@ -4,7 +4,7 @@ import os
 import cv2
 import skimage
 import constant
-from model import RectanglingNetwork
+from model import rectangling_network
 from utils import load, DataLoader
 from skimage import metrics
 
@@ -36,7 +36,7 @@ with tf.name_scope('dataset'):
 with tf.variable_scope('generator', reuse=None):
     print('testing = {}'.format(tf.get_variable_scope().name))
     test_mesh_primary, test_warp_image_primary, test_warp_mask_primary, test_mesh_final, test_warp_image_final, \
-        test_warp_mask_final = RectanglingNetwork(test_input, test_mask)
+        test_warp_mask_final = rectangling_network(test_input, test_mask)
 
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
