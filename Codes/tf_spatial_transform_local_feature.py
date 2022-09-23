@@ -13,10 +13,10 @@
 # limitations under the License.
 # ==============================================================================
 import tensorflow as tf
-import tensorDLT_local
+from . import tensorDLT_local
 from keras.layers import UpSampling2D
 
-import constant
+from . import constant
 
 grid_w = constant.GRID_W
 grid_h = constant.GRID_H
