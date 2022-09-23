@@ -5,7 +5,7 @@ from random import randint
 import numpy as np
 
 
-def change_brightness(image, delta=None):
+def change_brightness(image):
     image = tf.cast(image, tf.float32)
     image = tf.image.resize(image, [256, 256])
     image = tf.image.adjust_brightness(image, delta=randint(20, 100))
@@ -14,18 +14,6 @@ def change_brightness(image, delta=None):
     sess.run(init)
     image = sess.run(image)
     return image/255
-
-
-def blur_image(_img):
-    return cv2.GaussianBlur(_img, (5, 5), 0)
-
-
-def cropped_image(_img, x1, x2, y1, y2):
-    return _img[x1:x2, y1:y2]
-
-
-def flip_image(_img):
-    return np.fliplr(_img)
 
 
 if __name__ == "__main__":
@@ -43,6 +31,6 @@ if __name__ == "__main__":
     # plt.imshow(res)
     # plt.show()
 
-    res = change_brightness(img, 0)
+    res = change_brightness(img)
     plt.imshow(res)
     plt.show()

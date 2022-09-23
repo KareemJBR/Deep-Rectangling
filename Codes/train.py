@@ -94,7 +94,7 @@ with tf.variable_scope('generator', reuse=None):
     train_mesh_primary, train_warp_image_primary, train_warp_mask_primary, train_mesh_final, train_warp_image_final, \
         train_warp_mask_final = rectangling_network(train_input, train_mask)
 
-# define appearance loss (loss 1 of of the content term)
+# define appearance loss (loss 1 of the content term)
 lam_appearance = 1
 if lam_appearance != 0:
     primary_appearance_loss = intensity_loss(gen_frames=train_warp_image_primary, gt_frames=train_gt, l_num=1)
