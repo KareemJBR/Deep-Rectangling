@@ -65,4 +65,8 @@ def get_cropped(index, top_left, bottom_right):
                                                                        mask_image,
                                                                        gt_image)
 
+    cropped_img = cv.resize(cropped_img, dsize=(512, 384, 3), interpolation=cv.INTER_CUBIC)
+    cropped_gt = cv.resize(cropped_gt, dsize=(512, 384, 3), interpolation=cv.INTER_CUBIC)
+    cropped_mask = cv.resize(cropped_mask, dsize=(512, 384), interpolation=cv.INTER_CUBIC)
+
     return cropped_img, cropped_gt, cropped_mask
