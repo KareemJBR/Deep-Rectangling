@@ -5,7 +5,7 @@ import sys
 import os
 import glob
 import cv2
-from OurDrawMesh import get_cropped
+from cropped_augmentations import get_cropped
 
 rng = np.random.RandomState(2017)
 
