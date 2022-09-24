@@ -1,6 +1,35 @@
 import numpy as np
-import cv2 as cv
+import cv2
 import constant
+import os
+
+
+def np_load_frame(filename, resize_height, resize_width):
+    image_decoded = cv2.imread(filename)
+
+    if resize_height is not None:
+        image_resized = cv2.resize(image_decoded, (resize_width, resize_height))
+    else:
+        image_resized = image_decoded
+
+    image_resized = image_resized.astype(dtype=np.float32)
+    image_resized = (image_resized / 127.5) - 1.0
+    return image_resized
+
+
+def load(saver, sess, ckpt_path):
+    print(ckpt_path)
+    saver.restore(sess, ckpt_path)
+    print("Restored model parameters from {}".format(ckpt_path))
+
+
+def save(saver, sess, logdir, step):
+    model_name = 'model.ckpt'
+    checkpoint_path = os.path.join(logdir, model_name)
+    if not os.path.exists(logdir):
+        os.makedirs(logdir)
+    saver.save(sess, checkpoint_path, global_step=step)
+    print('The checkpoint has been created.')
 
 
 def draw_mesh_on_warp(warp, f_local, grid_h=constant.GRID_H, grid_w=constant.GRID_W):
@@ -29,15 +58,15 @@ def draw_mesh_on_warp(warp, f_local, grid_h=constant.GRID_H, grid_w=constant.GRI
             if j == grid_w and i == grid_h:
                 continue
             elif j == grid_w:
-                cv.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i + 1, j, 0], f_local[i + 1, j, 1]),
-                        point_color, thickness, line_type)
+                cv2.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i + 1, j, 0], f_local[i + 1, j, 1]),
+                         point_color, thickness, line_type)
             elif i == grid_h:
-                cv.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i, j + 1, 0], f_local[i, j + 1, 1]),
-                        point_color, thickness, line_type)
+                cv2.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i, j + 1, 0], f_local[i, j + 1, 1]),
+                         point_color, thickness, line_type)
             else:
-                cv.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i + 1, j, 0], f_local[i + 1, j, 1]),
-                        point_color, thickness, line_type)
-                cv.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i, j + 1, 0], f_local[i, j + 1, 1]),
-                        point_color, thickness, line_type)
+                cv2.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i + 1, j, 0], f_local[i + 1, j, 1]),
+                         point_color, thickness, line_type)
+                cv2.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i, j + 1, 0], f_local[i, j + 1, 1]),
+                         point_color, thickness, line_type)
 
     return warp
