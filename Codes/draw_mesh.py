@@ -4,8 +4,8 @@ import numpy as np
 import cv2 as cv
 import constant
 from model import rectangling_network
-from utils import load, DataLoader
-from entities import draw_mesh_on_warp
+from utils import DataLoader
+from entities import draw_mesh_on_warp, load
 
 os.environ['CUDA_DEVICES_ORDER'] = "PCI_BUS_ID"
 os.environ['CUDA_VISIBLE_DEVICES'] = constant.GPU

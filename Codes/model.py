@@ -28,12 +28,6 @@ def shift2mesh(mesh_shift, width, height):
 
 
 def rectangling_network(train_input, train_mask, width=512., height=384.):
-
-    print("train input: ", train_input)
-    print("train mask", train_mask)
-
-    print(train_input.shape, train_mask.shape, sep='\n')
-
     mesh_shift_primary, mesh_shift_final = build_model(train_input, train_mask)
 
     mesh_primary = shift2mesh(mesh_shift_primary, width, height)
@@ -44,6 +38,7 @@ def rectangling_network(train_input, train_mask, width=512., height=384.):
     warp_image_final, warp_mask_final = tf_spatial_transform_local.transformer(train_input, train_mask, mesh_final)
 
     return mesh_primary, warp_image_primary, warp_mask_primary, mesh_final, warp_image_final, warp_mask_final
+
 
 # feature extraction module
 def feature_extractor(image_tf):
@@ -98,7 +93,6 @@ def regression_net(correlation):
 
 def build_model(train_input, train_mask):
     with tf.variable_scope('model'):
-
         with tf.variable_scope('feature_extract', reuse=None):
             features = feature_extractor(tf.concat([train_input, train_mask], axis=3))
 
