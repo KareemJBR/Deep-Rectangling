@@ -8,7 +8,7 @@ Malik Egbarya - https://www.linkedin.com/in/malikegbarya/
 
 ## Project Description
 
-In this work we are trying to improve the results of a recent [https://github.com/nie-lang/DeepRectangling](work).
+In this work we are trying to improve the results of a recent [work](https://github.com/nie-lang/DeepRectangling).
 
 We are creating augmentations in different ways for each image in the input dataset, this way we are training our model on a much bigger dataset with a good chance for better accuracy.
 
