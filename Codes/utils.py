@@ -107,7 +107,7 @@ class DataLoader(object):
 
                 data_clip = []
 
-                cropped_input, cropped_gt, cropped_mask = get_cropped([0, 0], [3, 8], self, frame_id, curr_mesh[0])
+                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh[0])
 
                 data_clip.append(cropped_input)
                 data_clip.append(cropped_mask)
@@ -121,7 +121,7 @@ class DataLoader(object):
 
                 data_clip = []
 
-                cropped_input, cropped_gt, cropped_mask = get_cropped([3, 0], [6, 8], self, frame_id, curr_mesh[0])
+                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh[0])
 
                 data_clip.append(cropped_input)
                 data_clip.append(cropped_mask)
@@ -135,7 +135,7 @@ class DataLoader(object):
 
                 data_clip = []
 
-                cropped_input, cropped_gt, cropped_mask = get_cropped([0, 0], [6, 4], self, frame_id, curr_mesh[0])
+                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh[0])
 
                 data_clip.append(cropped_input)
                 data_clip.append(cropped_mask)
@@ -148,7 +148,7 @@ class DataLoader(object):
 
                 data_clip = []
 
-                cropped_input, cropped_gt, cropped_mask = get_cropped([0, 4], [6, 8], self, frame_id, curr_mesh[0])
+                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh[0])
 
                 data_clip.append(cropped_input)
                 data_clip.append(cropped_mask)
@@ -273,6 +273,8 @@ def crop_by_mesh(input_image, mesh_image, input_mask, gt_img):
     mask = cv2.inRange(mesh_image, constant.BLUE, constant.BLUE)
     # get bounds of white pixels
     white = np.where(mask == 255)
+
+    # TODO: causes errors
     x_min, y_min, x_max, y_max = np.min(white[1]), np.min(white[0]), np.max(white[1]), np.max(white[0])
 
     # crop the image at the bounds
@@ -311,7 +313,7 @@ def draw_grid(img):
     return img
 
 
-def get_cropped(top_left, bottom_right, dataloader, frame_id, mesh):
+def get_cropped(dataloader, frame_id, mesh):
     data_info_list = list(dataloader.datas.values())
 
     input_image = np_load_frame(data_info_list[1]['frame'][frame_id], 384, 512)
@@ -319,7 +321,7 @@ def get_cropped(top_left, bottom_right, dataloader, frame_id, mesh):
     gt_image = np_load_frame(data_info_list[0]['frame'][frame_id], 384, 512)
 
     source_input_img = np_load_frame(data_info_list[1]['frame'][frame_id], 384, 512)
-    mesh_input_img, _ = draw_mesh_on_warp(input_image, mesh)
+    mesh_input_img = draw_mesh_on_warp(input_image, mesh)
 
     cropped_img, cropped_mesh, cropped_mask, cropped_gt = \
         crop_by_mesh(source_input_img, mesh_input_img, mask_image, gt_image)
