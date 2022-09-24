@@ -2,8 +2,7 @@ import tensorflow as tf
 import os
 from model import rectangling_network
 from loss_functions import intensity_loss, intra_grid_loss, inter_grid_loss
-from utils import DataLoader
-from entities import load, save
+from utils import DataLoader, load, save
 import numpy as np
 import scipy.io
 import constant

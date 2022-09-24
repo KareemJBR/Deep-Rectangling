@@ -5,8 +5,7 @@ import cv2
 import skimage
 import constant
 from model import rectangling_network
-from utils import DataLoader
-from entities import load
+from utils import DataLoader, load
 from skimage import metrics
 
 
