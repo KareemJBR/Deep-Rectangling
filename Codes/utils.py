@@ -8,6 +8,7 @@ import cv2
 import constant
 from model import rectangling_network
 
+
 rng = np.random.RandomState(2017)
 
 
@@ -22,7 +23,9 @@ class DataLoader(object):
         length = data_info_list[0]['length']
 
         def data_clip_generator():
+            curr_mesh = []
             while True:
+                curr_mesh = []
                 data_clip = []
                 frame_id = rng.randint(0, length - 1)
                 # inputs
@@ -37,6 +40,51 @@ class DataLoader(object):
                 data_clip = np.concatenate(data_clip, axis=2)
 
                 yield data_clip
+
+                # TODO: add tf session
+
+                # define dataset
+                with tf.name_scope('dataset'):
+                    # ----------- testing ----------- #
+                    train_inputs_clips_tensor = tf.placeholder(shape=[batch_size, None, None, 3 * 3], dtype=tf.float32)
+
+                    train_input = train_inputs_clips_tensor[..., 0:3]
+                    train_mask = train_inputs_clips_tensor[..., 3:6]
+                    train_gt = train_inputs_clips_tensor[..., 6:9]
+
+                    print('train input = {}'.format(train_input))
+                    print('train mask = {}'.format(train_mask))
+                    print('train gt = {}'.format(train_gt))
+
+                # define testing generator function
+                with tf.variable_scope('generator', reuse=None):
+                    print('training = {}'.format(tf.get_variable_scope().name))
+                    train_mesh_primary, train_warp_image_primary, train_warp_mask_primary, train_mesh_final, \
+                        train_warp_image_final, train_warp_mask_final = rectangling_network(train_input, train_mask)
+
+                config = tf.ConfigProto()
+                config.gpu_options.allow_growth = True
+                with tf.Session(config=config) as sess:
+                    # dataset
+                    input_loader = DataLoader(constant.TRAIN_FOLDER)
+
+                    # initialize weights
+                    sess.run(tf.global_variables_initializer())
+                    print('Init global successfully!')
+
+                    def inference_func():
+                        for i in range(0, length):
+                            input_clip = np.expand_dims(input_loader.get_data_clips(i), axis=0)
+
+                            mesh_primary, warp_image_primary, warp_mask_primary, mesh_final, warp_image_final, \
+                                warp_mask_final = sess.run([train_mesh_primary, train_warp_image_primary,
+                                                            train_warp_mask_primary, train_mesh_final,
+                                                            train_warp_image_final, train_warp_mask_final],
+                                                           feed_dict={train_inputs_clips_tensor: input_clip})
+
+                            curr_mesh.append(mesh_final[0])
+
+                    inference_func()
 
                 # creating augmentations
 
@@ -59,7 +107,7 @@ class DataLoader(object):
 
                 data_clip = []
 
-                cropped_input, cropped_gt, cropped_mask = get_cropped([0, 0], [3, 8], self, frame_id)
+                cropped_input, cropped_gt, cropped_mask = get_cropped([0, 0], [3, 8], self, frame_id, curr_mesh[0])
 
                 data_clip.append(cropped_input)
                 data_clip.append(cropped_mask)
@@ -73,7 +121,7 @@ class DataLoader(object):
 
                 data_clip = []
 
-                cropped_input, cropped_gt, cropped_mask = get_cropped([3, 0], [6, 8], self, frame_id)
+                cropped_input, cropped_gt, cropped_mask = get_cropped([3, 0], [6, 8], self, frame_id, curr_mesh[0])
 
                 data_clip.append(cropped_input)
                 data_clip.append(cropped_mask)
@@ -87,7 +135,7 @@ class DataLoader(object):
 
                 data_clip = []
 
-                cropped_input, cropped_gt, cropped_mask = get_cropped([0, 0], [6, 4], self, frame_id)
+                cropped_input, cropped_gt, cropped_mask = get_cropped([0, 0], [6, 4], self, frame_id, curr_mesh[0])
 
                 data_clip.append(cropped_input)
                 data_clip.append(cropped_mask)
@@ -100,7 +148,7 @@ class DataLoader(object):
 
                 data_clip = []
 
-                cropped_input, cropped_gt, cropped_mask = get_cropped([0, 4], [6, 8], self, frame_id)
+                cropped_input, cropped_gt, cropped_mask = get_cropped([0, 4], [6, 8], self, frame_id, curr_mesh[0])
 
                 data_clip.append(cropped_input)
                 data_clip.append(cropped_mask)
@@ -263,24 +311,15 @@ def draw_grid(img):
     return img
 
 
-def get_image_mesh(img, msk):
-    train_mesh_primary, train_warp_image_primary, train_warp_mask_primary, train_mesh_final, train_warp_image_final, \
-        train_warp_mask_final = rectangling_network(img, msk)
-
-    return train_mesh_final
-
-
-def get_cropped(top_left, bottom_right, dataloader, frame_id):
+def get_cropped(top_left, bottom_right, dataloader, frame_id, mesh):
     data_info_list = list(dataloader.datas.values())
 
     input_image = np_load_frame(data_info_list[1]['frame'][frame_id], 384, 512)
     mask_image = np_load_frame(data_info_list[2]['frame'][frame_id], 384, 512)
     gt_image = np_load_frame(data_info_list[0]['frame'][frame_id], 384, 512)
 
-    mesh = get_image_mesh(input_image, mask_image)
-
     source_input_img = np_load_frame(data_info_list[1]['frame'][frame_id], 384, 512)
-    mesh_input_img, _ = draw_mesh_on_warp(input_image, mesh, top_left, bottom_right)
+    mesh_input_img, _ = draw_mesh_on_warp(input_image, mesh)
 
     cropped_img, cropped_mesh, cropped_mask, cropped_gt = \
         crop_by_mesh(source_input_img, mesh_input_img, mask_image, gt_image)
