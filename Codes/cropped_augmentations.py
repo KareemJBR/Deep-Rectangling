@@ -47,8 +47,13 @@ def draw_grid(img):
     return img
 
 
-def get_image_mesh(img):
-    pass
+def get_image_mesh(img, msk):
+    with tf.variable_scope('generator', reuse=None):
+        print('testing = {}'.format(tf.get_variable_scope().name))
+        test_mesh_primary, test_warp_image_primary, test_warp_mask_primary, test_mesh_final, test_warp_image_final, \
+            test_warp_mask_final = rectangling_network(img, msk)
+
+        return test_mesh_final
 
 
 def get_cropped(index, top_left, bottom_right):
@@ -56,7 +61,7 @@ def get_cropped(index, top_left, bottom_right):
     input_image = cv.imread("./DIR-D/training/input/0000" + str(index) + ".jpg")
     gt_image = cv.imread("./DIR-D/training/gt/0000" + str(index) + ".jpg")
     mask_image = cv.imread("./DIR-D/training/mask/0000" + str(index) + ".jpg")
-    mesh = get_image_mesh(input_image)
+    mesh = get_image_mesh(input_image, mask_image)
 
     source_input_img = cv.imread("./DIR-D/training/input/0000" + str(index) + ".jpg")
     mesh_input_img, pts = draw_mesh_on_warp(input_image, mesh, top_left, bottom_right)
