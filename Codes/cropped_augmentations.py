@@ -1,7 +1,9 @@
+import tensorflow as tf
 import numpy as np
 import cv2 as cv
 import constant
 from entities import draw_mesh_on_warp
+from model import rectangling_network
 
 
 def crop_by_mesh(input_image, mesh_image, input_mask, gt_img):
@@ -48,12 +50,14 @@ def draw_grid(img):
 
 
 def get_image_mesh(img, msk):
+    tmp_img = tf.Tensor()
+
     with tf.variable_scope('generator', reuse=None):
         print('testing = {}'.format(tf.get_variable_scope().name))
         test_mesh_primary, test_warp_image_primary, test_warp_mask_primary, test_mesh_final, test_warp_image_final, \
             test_warp_mask_final = rectangling_network(img, msk)
 
-        return test_mesh_final
+    return test_mesh_final
 
 
 def get_cropped(index, top_left, bottom_right):

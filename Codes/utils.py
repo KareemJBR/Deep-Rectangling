@@ -58,6 +58,8 @@ class DataLoader(object):
 
                 data_clip = []
 
+                print()
+
                 cropped_input, cropped_gt, cropped_mask = get_cropped(frame_id, [0, 0], [3, 8])
 
                 data_clip.append(cropped_input)

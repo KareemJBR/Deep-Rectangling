@@ -28,6 +28,12 @@ def shift2mesh(mesh_shift, width, height):
 
 
 def rectangling_network(train_input, train_mask, width=512., height=384.):
+
+    print("train input: ", train_input)
+    print("train mask", train_mask)
+
+    print(train_input.shape, train_mask.shape, sep='\n')
+
     mesh_shift_primary, mesh_shift_final = build_model(train_input, train_mask)
 
     mesh_primary = shift2mesh(mesh_shift_primary, width, height)
