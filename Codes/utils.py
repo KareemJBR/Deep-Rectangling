@@ -4,8 +4,8 @@ from collections import OrderedDict
 import sys
 import os
 import glob
-import cv2
 from cropped_augmentations import get_cropped
+from entities import np_load_frame
 
 rng = np.random.RandomState(2017)
 
@@ -151,31 +151,3 @@ class DataLoader(object):
         batch.append(np_load_frame(data_info_list[0]['frame'][index], 384, 512))
 
         return np.concatenate(batch, axis=2)
-
-
-def np_load_frame(filename, resize_height, resize_width):
-    image_decoded = cv2.imread(filename)
-
-    if resize_height is not None:
-        image_resized = cv2.resize(image_decoded, (resize_width, resize_height))
-    else:
-        image_resized = image_decoded
-
-    image_resized = image_resized.astype(dtype=np.float32)
-    image_resized = (image_resized / 127.5) - 1.0
-    return image_resized
-
-
-def load(saver, sess, ckpt_path):
-    print(ckpt_path)
-    saver.restore(sess, ckpt_path)
-    print("Restored model parameters from {}".format(ckpt_path))
-
-
-def save(saver, sess, logdir, step):
-    model_name = 'model.ckpt'
-    checkpoint_path = os.path.join(logdir, model_name)
-    if not os.path.exists(logdir):
-        os.makedirs(logdir)
-    saver.save(sess, checkpoint_path, global_step=step)
-    print('The checkpoint has been created.')
