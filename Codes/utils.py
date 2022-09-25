@@ -9,6 +9,8 @@ import constant
 from skimage.transform import resize
 
 rng = np.random.RandomState(2017)
+grid_h = constant.GRID_H
+grid_w = constant.GRID_W
 
 
 class DataLoader(object):
@@ -61,7 +63,7 @@ class DataLoader(object):
 
                 data_clip = []
 
-                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh)
+                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh, [0, 0], [3, 8])
 
                 data_clip.append(cropped_input)
                 data_clip.append(cropped_mask)
@@ -75,7 +77,7 @@ class DataLoader(object):
 
                 data_clip = []
 
-                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh)
+                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh, [0, 0], [6, 4])
 
                 data_clip.append(cropped_input)
                 data_clip.append(cropped_mask)
@@ -89,7 +91,7 @@ class DataLoader(object):
 
                 data_clip = []
 
-                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh)
+                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh, [3, 0], [6, 8])
 
                 data_clip.append(cropped_input)
                 data_clip.append(cropped_mask)
@@ -102,7 +104,7 @@ class DataLoader(object):
 
                 data_clip = []
 
-                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh)
+                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh, [0, 4], [6, 8])
 
                 data_clip.append(cropped_input)
                 data_clip.append(cropped_mask)
@@ -182,7 +184,7 @@ def save(saver, sess, logdir, step):
     print('The checkpoint has been created.')
 
 
-def draw_mesh_on_warp(warp, f_local, grid_h=constant.GRID_H, grid_w=constant.GRID_W):
+def draw_mesh_on_warp(warp, f_local, top_left, bottom_right):
     min_w = np.minimum(np.min(f_local[:, :, 0]), 0).astype(np.int32)
     max_w = np.maximum(np.max(f_local[:, :, 0]), 512).astype(np.int32)
     min_h = np.minimum(np.min(f_local[:, :, 1]), 0).astype(np.int32)
@@ -204,24 +206,27 @@ def draw_mesh_on_warp(warp, f_local, grid_h=constant.GRID_H, grid_w=constant.GRI
     for i in range(grid_h + 1):
         for j in range(grid_w + 1):
             num = num + 1
-            if j == grid_w and i == grid_h:
+
+            if (j == grid_w and i == grid_h) or (j < top_left[0] or j > bottom_right[1]) or (i < top_left[1] or
+                                                                                             i > bottom_right[0]) or (
+                    j == bottom_right[1] and i == bottom_right[0]):
                 continue
-            elif j == grid_w:
+
+            elif j == grid_w or j == bottom_right[1]:
                 cv2.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i + 1, j, 0], f_local[i + 1, j, 1]),
                          constant.BLUE, thickness, line_type)
-            elif i == grid_h:
+
+            elif i == grid_h or i == bottom_right[0]:
                 cv2.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i, j + 1, 0], f_local[i, j + 1, 1]),
                          constant.BLUE, thickness, line_type)
+
             else:
                 cv2.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i + 1, j, 0], f_local[i + 1, j, 1]),
-                         constant.BLUE, thickness, line_type)
-                cv2.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i, j + 1, 0], f_local[i, j + 1, 1]),
                          constant.BLUE, thickness, line_type)
 
     return warp
 
 
-# TODO: The function should take bottom right and top left as parameters but it does not
 def crop_by_mesh(input_image, mesh_image, input_mask, gt_img):
     # create the mask
     mask = cv2.inRange(mesh_image, constant.BLUE, constant.BLUE)
@@ -278,7 +283,7 @@ def tensor_to_np_mat(tensor):
     return res
 
 
-def get_cropped(dataloader, frame_id, mesh):
+def get_cropped(dataloader, frame_id, mesh, top_left, bottom_right):
     data_info_list = list(dataloader.datas.values())
 
     input_image = np_load_frame(data_info_list[1]['frame'][frame_id], 384, 512)
@@ -286,13 +291,18 @@ def get_cropped(dataloader, frame_id, mesh):
     gt_image = np_load_frame(data_info_list[0]['frame'][frame_id], 384, 512)
 
     source_input_img = np_load_frame(data_info_list[1]['frame'][frame_id], 384, 512)
-    mesh_input_img = draw_mesh_on_warp(input_image, mesh)
+    mesh_input_img = draw_mesh_on_warp(input_image, mesh, top_left, bottom_right)
 
     cropped_img, cropped_mesh, cropped_mask, cropped_gt = \
         crop_by_mesh(source_input_img, mesh_input_img, mask_image, gt_image)
 
     cropped_img, cropped_gt, cropped_mask = \
         tensor_to_np_mat(cropped_img), tensor_to_np_mat(cropped_gt), tensor_to_np_mat(cropped_mask)
+
+    print("*" * 30, end='')
+    print(" Debugging print ", end='')
+    print("*" * 30)
+    print(cropped_img.shape, cropped_gt.shape, cropped_mask.shape, sep='\n')
 
     cropped_img = resize(cropped_img, (384, 512, 3))
     cropped_gt = resize(cropped_gt, (384, 512, 3))
