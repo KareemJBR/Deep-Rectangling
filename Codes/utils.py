@@ -221,6 +221,7 @@ def draw_mesh_on_warp(warp, f_local, grid_h=constant.GRID_H, grid_w=constant.GRI
     return warp
 
 
+# TODO: The function should take bottom right and top left as parameters but it does not
 def crop_by_mesh(input_image, mesh_image, input_mask, gt_img):
     # create the mask
     mask = cv2.inRange(mesh_image, constant.BLUE, constant.BLUE)
@@ -265,7 +266,7 @@ def draw_grid(img):
     return img
 
 
-def tensor_to_numpy(tensor):
+def tensor_to_np_mat(tensor):
     rows, cols, channels = tensor.shape
     res = np.zeros(shape=(rows, cols, channels))
 
@@ -291,7 +292,7 @@ def get_cropped(dataloader, frame_id, mesh):
         crop_by_mesh(source_input_img, mesh_input_img, mask_image, gt_image)
 
     cropped_img, cropped_gt, cropped_mask = \
-        tensor_to_numpy(cropped_img), tensor_to_numpy(cropped_gt), tensor_to_numpy(cropped_mask)
+        tensor_to_np_mat(cropped_img), tensor_to_np_mat(cropped_gt), tensor_to_np_mat(cropped_mask)
 
     cropped_img = resize(cropped_img, (384, 512, 3))
     cropped_gt = resize(cropped_gt, (384, 512, 3))
