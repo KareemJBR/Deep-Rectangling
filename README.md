@@ -12,6 +12,10 @@ In this work we are trying to improve the results of a [recent work](https://git
 
 We are creating augmentations in different ways for each image in the input dataset, this way we are training our model on a much bigger dataset with a good chance for better accuracy.
 
+## DIR-D
+
+For getting the dataset used to train and test our work, you can download it from [Google Drive](https://drive.google.com/file/d/1Q0b1OLa3qbHGhFVwsLJ_fkgTRlAzFPCB/view?usp=sharing).
+
 ## Requirements
 
 During our work, we had our code on:
