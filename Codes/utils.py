@@ -8,7 +8,6 @@ import cv2
 import constant
 from model import rectangling_network
 
-
 rng = np.random.RandomState(2017)
 
 
@@ -40,8 +39,6 @@ class DataLoader(object):
                 data_clip = np.concatenate(data_clip, axis=2)
 
                 yield data_clip
-
-                # TODO: add tf session
 
                 # define dataset
                 with tf.name_scope('dataset'):
@@ -76,86 +73,86 @@ class DataLoader(object):
                         for i in range(0, length):
                             input_clip = np.expand_dims(input_loader.get_data_clips(i), axis=0)
 
-                            mesh_primary, warp_image_primary, warp_mask_primary, mesh_final, warp_image_final, \
-                                warp_mask_final = sess.run([train_mesh_primary, train_warp_image_primary,
-                                                            train_warp_mask_primary, train_mesh_final,
-                                                            train_warp_image_final, train_warp_mask_final],
-                                                           feed_dict={train_inputs_clips_tensor: input_clip})
+                            mesh_primary, warp_image_primary, warp_mask_primary, mesh_final, warp_image_final, warp_mask_final = \
+                                sess.run([train_mesh_primary, train_warp_image_primary,
+                                          train_warp_mask_primary, train_mesh_final,
+                                          train_warp_image_final, train_warp_mask_final],
+                                         feed_dict={train_inputs_clips_tensor: input_clip})
 
                             curr_mesh.append(mesh_final[0])
 
                     inference_func()
 
-                # creating augmentations
-
-                data_clip = []
-
-                # flipped augmentation
-                flipped_input = np.fliplr(input_img)
-                flipped_mask = np.fliplr(mask_img)
-                flipped_gt = np.fliplr(gt_img)
-
-                data_clip.append(flipped_input)
-                data_clip.append(flipped_mask)
-                data_clip.append(flipped_gt)
-                data_clip = np.concatenate(data_clip, axis=2)
-
-                yield data_clip
-
-                # cropped augmentations:
-                # first crop window
-
-                data_clip = []
-
-                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh[0])
-
-                data_clip.append(cropped_input)
-                data_clip.append(cropped_mask)
-                data_clip.append(cropped_gt)
-
-                data_clip = np.concatenate(data_clip, axis=2)
-
-                yield data_clip
-
-                # second crop window
-
-                data_clip = []
-
-                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh[0])
-
-                data_clip.append(cropped_input)
-                data_clip.append(cropped_mask)
-                data_clip.append(cropped_gt)
-
-                data_clip = np.concatenate(data_clip, axis=2)
-
-                yield data_clip
-
-                # third crop window
-
-                data_clip = []
-
-                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh[0])
-
-                data_clip.append(cropped_input)
-                data_clip.append(cropped_mask)
-                data_clip.append(cropped_gt)
-                data_clip = np.concatenate(data_clip, axis=2)
-
-                yield data_clip
-
-                # fourth crop window
-
-                data_clip = []
-
-                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh[0])
-
-                data_clip.append(cropped_input)
-                data_clip.append(cropped_mask)
-                data_clip.append(cropped_gt)
-                data_clip = np.concatenate(data_clip, axis=2)
-
-                yield data_clip
+                # # creating augmentations
+                #
+                # data_clip = []
+                #
+                # # flipped augmentation
+                # flipped_input = np.fliplr(input_img)
+                # flipped_mask = np.fliplr(mask_img)
+                # flipped_gt = np.fliplr(gt_img)
+                #
+                # data_clip.append(flipped_input)
+                # data_clip.append(flipped_mask)
+                # data_clip.append(flipped_gt)
+                # data_clip = np.concatenate(data_clip, axis=2)
+                #
+                # yield data_clip
+                #
+                # # cropped augmentations:
+                # # first crop window
+                #
+                # data_clip = []
+                #
+                # cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh[0])
+                #
+                # data_clip.append(cropped_input)
+                # data_clip.append(cropped_mask)
+                # data_clip.append(cropped_gt)
+                #
+                # data_clip = np.concatenate(data_clip, axis=2)
+                #
+                # yield data_clip
+                #
+                # # second crop window
+                #
+                # data_clip = []
+                #
+                # cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh[0])
+                #
+                # data_clip.append(cropped_input)
+                # data_clip.append(cropped_mask)
+                # data_clip.append(cropped_gt)
+                #
+                # data_clip = np.concatenate(data_clip, axis=2)
+                #
+                # yield data_clip
+                #
+                # # third crop window
+                #
+                # data_clip = []
+                #
+                # cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh[0])
+                #
+                # data_clip.append(cropped_input)
+                # data_clip.append(cropped_mask)
+                # data_clip.append(cropped_gt)
+                # data_clip = np.concatenate(data_clip, axis=2)
+                #
+                # yield data_clip
+                #
+                # # fourth crop window
+                #
+                # data_clip = []
+                #
+                # cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh[0])
+                #
+                # data_clip.append(cropped_input)
+                # data_clip.append(cropped_mask)
+                # data_clip.append(cropped_gt)
+                # data_clip = np.concatenate(data_clip, axis=2)
+                #
+                # yield data_clip
 
         dataset = tf.data.Dataset.from_generator(generator=data_clip_generator, output_types=tf.float32,
                                                  output_shapes=[384, 512, 9])
@@ -243,7 +240,6 @@ def draw_mesh_on_warp(warp, f_local, grid_h=constant.GRID_H, grid_w=constant.GRI
     f_local[:, :, 0] = f_local[:, :, 0] - min_w + 5
     f_local[:, :, 1] = f_local[:, :, 1] - min_h + 5
 
-    point_color = (0, 255, 0)  # BGR
     thickness = 2
     line_type = 8
     num = 1
@@ -255,15 +251,15 @@ def draw_mesh_on_warp(warp, f_local, grid_h=constant.GRID_H, grid_w=constant.GRI
                 continue
             elif j == grid_w:
                 cv2.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i + 1, j, 0], f_local[i + 1, j, 1]),
-                         point_color, thickness, line_type)
+                         constant.BLUE, thickness, line_type)
             elif i == grid_h:
                 cv2.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i, j + 1, 0], f_local[i, j + 1, 1]),
-                         point_color, thickness, line_type)
+                         constant.BLUE, thickness, line_type)
             else:
                 cv2.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i + 1, j, 0], f_local[i + 1, j, 1]),
-                         point_color, thickness, line_type)
+                         constant.BLUE, thickness, line_type)
                 cv2.line(warp, (f_local[i, j, 0], f_local[i, j, 1]), (f_local[i, j + 1, 0], f_local[i, j + 1, 1]),
-                         point_color, thickness, line_type)
+                         constant.BLUE, thickness, line_type)
 
     return warp
 
@@ -274,7 +270,6 @@ def crop_by_mesh(input_image, mesh_image, input_mask, gt_img):
     # get bounds of white pixels
     white = np.where(mask == 255)
 
-    # TODO: causes errors
     x_min, y_min, x_max, y_max = np.min(white[1]), np.min(white[0]), np.max(white[1]), np.max(white[0])
 
     # crop the image at the bounds
@@ -313,6 +308,18 @@ def draw_grid(img):
     return img
 
 
+def tensor_to_numpy(tensor):
+    rows, cols, channels = tensor.shape
+    res = np.zeros(shape=(rows, cols, channels))
+
+    for i in range(rows):
+        for j in range(cols):
+            for k in range(channels):
+                res[i][j][k] = tensor[i][j][k]
+
+    return res
+
+
 def get_cropped(dataloader, frame_id, mesh):
     data_info_list = list(dataloader.datas.values())
 
@@ -326,4 +333,13 @@ def get_cropped(dataloader, frame_id, mesh):
     cropped_img, cropped_mesh, cropped_mask, cropped_gt = \
         crop_by_mesh(source_input_img, mesh_input_img, mask_image, gt_image)
 
-    return cropped_img, cropped_gt, cropped_mask
+    cropped_img, cropped_gt, cropped_mask = \
+        tensor_to_numpy(cropped_img), tensor_to_numpy(cropped_gt), tensor_to_numpy(cropped_mask)
+
+    print("cropped_img shape: ", cropped_img.shape)
+
+    cropped_img = cv2.resize(cropped_img, (384, 512, 3))
+    cropped_gt = cv2.resize(cropped_gt, (384, 512, 3))
+    cropped_mask = cv2.resize(cropped_mask, (384, 512, 3))
+
+    return tf.convert_to_tensor(cropped_img), tf.convert_to_tensor(cropped_gt), tf.convert_to_tensor(cropped_mask)
