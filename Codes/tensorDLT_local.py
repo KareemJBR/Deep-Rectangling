@@ -176,7 +176,17 @@ def solve_DLT(orig_pt4, pred_pt4):
     print('--shape of b:', b_mat.get_shape().as_list())
 
     # Solve the Ax = b
+
     h_8el = tf.matrix_solve(a_mat, b_mat)  # BATCH_SIZE x 8.
+
+    # try:
+    #     h_8el = tf.matrix_solve(a_mat, b_mat)  # BATCH_SIZE x 8.
+    # except:
+    #     a_mat = np.linalg.pinv(a_mat)
+    #     b_mat = np.linalg.pinv(b_mat)
+    #
+    #     h_8el = tf.matrix_solve(a_mat, b_mat)  # BATCH_SIZE x 8.
+
     print('--shape of H_8el', h_8el)
 
     # Add ones to the last cols to reconstruct H for computing reprojection error

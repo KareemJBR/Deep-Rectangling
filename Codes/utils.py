@@ -6,7 +6,7 @@ import os
 import glob
 import cv2
 import constant
-from model import rectangling_network
+from skimage.transform import resize
 
 rng = np.random.RandomState(2017)
 
@@ -22,11 +22,10 @@ class DataLoader(object):
         length = data_info_list[0]['length']
 
         def data_clip_generator():
-            curr_mesh = []
             while True:
-                curr_mesh = []
                 data_clip = []
                 frame_id = rng.randint(0, length - 1)
+                curr_mesh = np.load('./DIR-D/training/mesh/' + str(frame_id).zfill(5) + ".npy")
                 # inputs
 
                 input_img = np_load_frame(data_info_list[1]['frame'][frame_id], 384, 512)
@@ -40,119 +39,77 @@ class DataLoader(object):
 
                 yield data_clip
 
-                # define dataset
-                with tf.name_scope('dataset'):
-                    # ----------- testing ----------- #
-                    train_inputs_clips_tensor = tf.placeholder(shape=[batch_size, None, None, 3 * 3], dtype=tf.float32)
+                # creating augmentations
 
-                    train_input = train_inputs_clips_tensor[..., 0:3]
-                    train_mask = train_inputs_clips_tensor[..., 3:6]
-                    train_gt = train_inputs_clips_tensor[..., 6:9]
+                data_clip = []
 
-                    print('train input = {}'.format(train_input))
-                    print('train mask = {}'.format(train_mask))
-                    print('train gt = {}'.format(train_gt))
+                # flipped augmentation
+                flipped_input = np.fliplr(input_img)
+                flipped_mask = np.fliplr(mask_img)
+                flipped_gt = np.fliplr(gt_img)
 
-                # define testing generator function
-                with tf.variable_scope('generator', reuse=None):
-                    print('training = {}'.format(tf.get_variable_scope().name))
-                    train_mesh_primary, train_warp_image_primary, train_warp_mask_primary, train_mesh_final, \
-                        train_warp_image_final, train_warp_mask_final = rectangling_network(train_input, train_mask)
+                data_clip.append(flipped_input)
+                data_clip.append(flipped_mask)
+                data_clip.append(flipped_gt)
 
-                config = tf.ConfigProto()
-                config.gpu_options.allow_growth = True
-                with tf.Session(config=config) as sess:
-                    # dataset
-                    input_loader = DataLoader(constant.TRAIN_FOLDER)
+                data_clip = np.concatenate(data_clip, axis=2)
 
-                    # initialize weights
-                    sess.run(tf.global_variables_initializer())
-                    print('Init global successfully!')
+                yield data_clip
 
-                    def inference_func():
-                        for i in range(0, length):
-                            input_clip = np.expand_dims(input_loader.get_data_clips(i), axis=0)
+                # cropped augmentations:
+                # first crop window
 
-                            mesh_primary, warp_image_primary, warp_mask_primary, mesh_final, warp_image_final, warp_mask_final = \
-                                sess.run([train_mesh_primary, train_warp_image_primary,
-                                          train_warp_mask_primary, train_mesh_final,
-                                          train_warp_image_final, train_warp_mask_final],
-                                         feed_dict={train_inputs_clips_tensor: input_clip})
+                data_clip = []
 
-                            curr_mesh.append(mesh_final[0])
+                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh)
 
-                    inference_func()
+                data_clip.append(cropped_input)
+                data_clip.append(cropped_mask)
+                data_clip.append(cropped_gt)
 
-                # # creating augmentations
-                #
-                # data_clip = []
-                #
-                # # flipped augmentation
-                # flipped_input = np.fliplr(input_img)
-                # flipped_mask = np.fliplr(mask_img)
-                # flipped_gt = np.fliplr(gt_img)
-                #
-                # data_clip.append(flipped_input)
-                # data_clip.append(flipped_mask)
-                # data_clip.append(flipped_gt)
-                # data_clip = np.concatenate(data_clip, axis=2)
-                #
-                # yield data_clip
-                #
-                # # cropped augmentations:
-                # # first crop window
-                #
-                # data_clip = []
-                #
-                # cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh[0])
-                #
-                # data_clip.append(cropped_input)
-                # data_clip.append(cropped_mask)
-                # data_clip.append(cropped_gt)
-                #
-                # data_clip = np.concatenate(data_clip, axis=2)
-                #
-                # yield data_clip
-                #
-                # # second crop window
-                #
-                # data_clip = []
-                #
-                # cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh[0])
-                #
-                # data_clip.append(cropped_input)
-                # data_clip.append(cropped_mask)
-                # data_clip.append(cropped_gt)
-                #
-                # data_clip = np.concatenate(data_clip, axis=2)
-                #
-                # yield data_clip
-                #
-                # # third crop window
-                #
-                # data_clip = []
-                #
-                # cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh[0])
-                #
-                # data_clip.append(cropped_input)
-                # data_clip.append(cropped_mask)
-                # data_clip.append(cropped_gt)
-                # data_clip = np.concatenate(data_clip, axis=2)
-                #
-                # yield data_clip
-                #
-                # # fourth crop window
-                #
-                # data_clip = []
-                #
-                # cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh[0])
-                #
-                # data_clip.append(cropped_input)
-                # data_clip.append(cropped_mask)
-                # data_clip.append(cropped_gt)
-                # data_clip = np.concatenate(data_clip, axis=2)
-                #
-                # yield data_clip
+                data_clip = np.concatenate(data_clip, axis=2)
+
+                yield data_clip
+
+                # second crop window
+
+                data_clip = []
+
+                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh)
+
+                data_clip.append(cropped_input)
+                data_clip.append(cropped_mask)
+                data_clip.append(cropped_gt)
+
+                data_clip = np.concatenate(data_clip, axis=2)
+
+                yield data_clip
+
+                # third crop window
+
+                data_clip = []
+
+                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh)
+
+                data_clip.append(cropped_input)
+                data_clip.append(cropped_mask)
+                data_clip.append(cropped_gt)
+                data_clip = np.concatenate(data_clip, axis=2)
+
+                yield data_clip
+
+                # fourth crop window
+
+                data_clip = []
+
+                cropped_input, cropped_gt, cropped_mask = get_cropped(self, frame_id, curr_mesh)
+
+                data_clip.append(cropped_input)
+                data_clip.append(cropped_mask)
+                data_clip.append(cropped_gt)
+                data_clip = np.concatenate(data_clip, axis=2)
+
+                yield data_clip
 
         dataset = tf.data.Dataset.from_generator(generator=data_clip_generator, output_types=tf.float32,
                                                  output_shapes=[384, 512, 9])
@@ -336,10 +293,8 @@ def get_cropped(dataloader, frame_id, mesh):
     cropped_img, cropped_gt, cropped_mask = \
         tensor_to_numpy(cropped_img), tensor_to_numpy(cropped_gt), tensor_to_numpy(cropped_mask)
 
-    print("cropped_img shape: ", cropped_img.shape)
+    cropped_img = resize(cropped_img, (384, 512, 3))
+    cropped_gt = resize(cropped_gt, (384, 512, 3))
+    cropped_mask = resize(cropped_mask, (384, 512, 3))
 
-    cropped_img = cv2.resize(cropped_img, (384, 512, 3))
-    cropped_gt = cv2.resize(cropped_gt, (384, 512, 3))
-    cropped_mask = cv2.resize(cropped_mask, (384, 512, 3))
-
-    return tf.convert_to_tensor(cropped_img), tf.convert_to_tensor(cropped_gt), tf.convert_to_tensor(cropped_mask)
+    return cropped_img, cropped_gt, cropped_mask
