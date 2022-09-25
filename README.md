@@ -46,7 +46,7 @@ python train.py
 
 ### Pretrained model for deep rectangling
 
-Our pretrained rectangling model can be available at Google Drive. Extract the compressed file and place the four files to 'Codes/checkpoints/Ptrained_model/' folder.
+Our pretrained rectangling model can be available at [Google Drive](). Extract the compressed file and place the four files to 'Codes/checkpoints/Ptrained_model/' folder.
 
 ### Testing
 
