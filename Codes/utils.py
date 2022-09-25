@@ -299,11 +299,6 @@ def get_cropped(dataloader, frame_id, mesh, top_left, bottom_right):
     cropped_img, cropped_gt, cropped_mask = \
         tensor_to_np_mat(cropped_img), tensor_to_np_mat(cropped_gt), tensor_to_np_mat(cropped_mask)
 
-    print("*" * 30, end='')
-    print(" Debugging print ", end='')
-    print("*" * 30)
-    print(cropped_img.shape, cropped_gt.shape, cropped_mask.shape, sep='\n')
-
     cropped_img = resize(cropped_img, (384, 512, 3))
     cropped_gt = resize(cropped_gt, (384, 512, 3))
     cropped_mask = resize(cropped_mask, (384, 512, 3))
