@@ -1,3 +1,8 @@
+"""
+This file creates the mesh files for the training files and add them to the training dataset under the directory
+training/mesh/
+"""
+
 import tensorflow as tf
 import os
 import numpy as np

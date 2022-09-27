@@ -153,6 +153,7 @@ def save(saver, sess, logdir, step):
 
 
 def draw_mesh_on_warp(warp, f_local, top_left, bottom_right):
+    """Draws mesh on warp based on the corners received as arguments."""
     min_w = np.minimum(np.min(f_local[:, :, 0]), 0).astype(np.int32)
     max_w = np.maximum(np.max(f_local[:, :, 0]), 512).astype(np.int32)
     min_h = np.minimum(np.min(f_local[:, :, 1]), 0).astype(np.int32)
@@ -196,8 +197,17 @@ def draw_mesh_on_warp(warp, f_local, top_left, bottom_right):
 
 
 def crop_by_mesh(input_image, mesh_image, input_mask, gt_img):
+    """
+    Crops image by its mesh.
+    :param input_image: The input image to be processed.
+    :param mesh_image: The mesh of `input_image`.
+    :param input_mask: The mask of `input_image`.
+    :param gt_img: The ground-truth image of `input_image`.
+    :return: Tuple containing the cropped input image, mesh, mask and ground-truth.
+    """
     # create the mask
     mask = cv2.inRange(mesh_image, constant.BLUE, constant.BLUE)
+
     # get bounds of white pixels
     white = np.where(mask == 255)
 
@@ -212,6 +222,7 @@ def crop_by_mesh(input_image, mesh_image, input_mask, gt_img):
 
 
 def draw_grid(img):
+    """Draws grid on `img` in blue."""
     rows = 384
     cols = 512
 
@@ -240,6 +251,11 @@ def draw_grid(img):
 
 
 def tensor_to_np_mat(tensor):
+    """
+    Converts images from tf.Tensor to NumPy arrays
+    :param tensor: The image passed as a tf.Tensor object.
+    :return: NumPy array for the same input image.
+    """
     rows, cols, channels = tensor.shape
     res = np.zeros(shape=(rows, cols, channels))
 
@@ -252,6 +268,15 @@ def tensor_to_np_mat(tensor):
 
 
 def get_cropped(dataloader, frame_id, mesh, top_left, bottom_right):
+    """
+    Creates an augmentation image for the passed image using image cropping method.
+    :param dataloader: The DataLoader object containing the input image.
+    :param frame_id: The frame id number for the images to be processed.
+    :param mesh: The mesh of the input image.
+    :param top_left: The top left corner of the cropped mesh.
+    :param bottom_right: The bottom right corner of the cropped mesh.
+    :return: Tuple containing a new augmentation of the input image passed to the method with its mask and gt images.
+    """
     data_info_list = list(dataloader.datas.values())
 
     input_image = np_load_frame(data_info_list[1]['frame'][frame_id], 384, 512)
