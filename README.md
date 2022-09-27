@@ -46,11 +46,11 @@ python train.py
 
 ### Pretrained model for deep rectangling
 
-Our pretrained rectangling model can be available at [Google Drive](). Extract the compressed file and place the four files to 'Codes/checkpoints/Ptrained_model/' folder.
+Our pretrained rectangling model can be available at [Google Drive](https://drive.google.com/file/d/1Q0b1OLa3qbHGhFVwsLJ_fkgTRlAzFPCB/view?usp=sharing). Extract the compressed file and place the four files to 'Codes/checkpoints/Ptrained_model/' folder.
 
 ### Testing
 
-Modidy the 'Codes/constant.py'to set the 'TEST_FOLDER'/'GPU'. The path for the checkpoint file can be modified in 'Codes/inference.py'.
+Modify the 'Codes/constant.py' to set the 'TEST_FOLDER'/'GPU'. The path for the checkpoint file can be modified in 'Codes/inference.py'.
 
 ```
 cd Codes/
@@ -59,7 +59,7 @@ python inference.py
 
 ### Testing with arbitrary resolution images
 
-Modidy the 'Codes_for_Arbitrary_Resolution/constant.py'to set the 'TEST_FOLDER'/'GPU'. The path for the checkpoint file can be modified in 'Codes_for_Arbitrary_Resolution/inference.py'. Then, put the testing images into the folder 'Codes_for_Arbitrary_Resolution/other_dataset/' (including input and mask) and run:
+Modify the 'Codes_for_Arbitrary_Resolution/constant.py'to set the 'TEST_FOLDER'/'GPU'. The path for the checkpoint file can be modified in 'Codes_for_Arbitrary_Resolution/inference.py'. Then, put the testing images into the folder 'Codes_for_Arbitrary_Resolution/other_dataset/' (including input and mask) and run:
 
 ```
 cd Codes_for_Arbitrary_Resolution/
