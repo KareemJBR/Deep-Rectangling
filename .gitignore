@@ -274,6 +274,10 @@ Codes/DIR-D/
 
 # pretrained model
 Codes/checkpoints/pretrained_model/
+Codes/checkpoints/our_model/
+
+# summary
+Codes/summary/
 
 # vgg-19
 Codes/vgg19/imagenet-vgg-verydeep-19.mat

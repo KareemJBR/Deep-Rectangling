@@ -15,9 +15,11 @@ os.environ['CUDA_VISIBLE_DEVICES'] = constant.GPU
 test_folder = constant.TEST_FOLDER
 batch_size = constant.TEST_BATCH_SIZE
 
-snapshot_dir = constant.SNAPSHOT_DIR + '/pretrained_model/model.ckpt-100000'
-# snapshot_dir = constant.SNAPSHOT_DIR + '/our_model/model.ckpt-' + str(constant.ITERATIONS)
-# snapshot_dir = './checkpoints/model.ckpt-100000'
+# snapshot_dir = constant.SNAPSHOT_DIR + '/pretrained_model/model.ckpt-100000'
+snapshot_dir = constant.SNAPSHOT_DIR + '/our_model/model.ckpt-100000'
+
+# path_prefix = "../final_rectangling/"
+path_prefix = "../our_final_rectangling/"
 
 # define dataset
 with tf.name_scope('dataset'):
@@ -78,7 +80,10 @@ with tf.Session(config=config) as sess:
             psnr = skimage.metrics.peak_signal_noise_ratio(warp_image, warp_gt, data_range=255)
             ssim = skimage.metrics.structural_similarity(warp_image, warp_gt, data_range=255, multichannel=True)
 
-            path = "../final_rectangling/" + str(i + 1).zfill(5) + ".jpg"
+            path = path_prefix + str(i + 1).zfill(5) + ".jpg"
+
+            # path = path_prefix + str(i + 1).zfill(5) + ".jpg"
+
             cv2.imwrite(path, warp_image)
 
             print('i = {} / {}, psnr = {:.6f}'.format(i + 1, length, psnr))
