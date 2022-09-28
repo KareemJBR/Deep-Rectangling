@@ -60,26 +60,26 @@ class DataLoader(object):
 
                 # cropped augmentations:
 
-                crop_corners = [
-                    ((0, 0), (3, 8)),
-                    ((0, 0), (6, 4)),
-                    ((3, 0), (6, 8)),
-                    ((0, 4), (6, 8)),
-                ]
-
-                for top_left, bottom_right in crop_corners:
-                    data_clip = []
-
-                    cropped_input, cropped_gt, cropped_mask = \
-                        get_cropped(self, frame_id, curr_mesh, top_left, bottom_right)
-
-                    data_clip.append(cropped_input)
-                    data_clip.append(cropped_mask)
-                    data_clip.append(cropped_gt)
-
-                    data_clip = np.concatenate(data_clip, axis=2)
-
-                    yield data_clip
+                # crop_corners = [
+                #     ((0, 0), (3, 8)),
+                #     ((0, 0), (6, 4)),
+                #     ((3, 0), (6, 8)),
+                #     ((0, 4), (6, 8)),
+                # ]
+                #
+                # for top_left, bottom_right in crop_corners:
+                #     data_clip = []
+                #
+                #     cropped_input, cropped_gt, cropped_mask = \
+                #         get_cropped(self, frame_id, curr_mesh, top_left, bottom_right)
+                #
+                #     data_clip.append(cropped_input)
+                #     data_clip.append(cropped_mask)
+                #     data_clip.append(cropped_gt)
+                #
+                #     data_clip = np.concatenate(data_clip, axis=2)
+                #
+                #     yield data_clip
 
         dataset = tf.data.Dataset.from_generator(generator=data_clip_generator, output_types=tf.float32,
                                                  output_shapes=[384, 512, 9])

@@ -275,6 +275,7 @@ Codes/DIR-D/
 # pretrained model
 Codes/checkpoints/pretrained_model/
 Codes/checkpoints/our_model/
+Codes/checkpoints/our_model_without_crop/
 
 # summary
 Codes/summary/

@@ -16,10 +16,12 @@ test_folder = constant.TEST_FOLDER
 batch_size = constant.TEST_BATCH_SIZE
 
 # snapshot_dir = constant.SNAPSHOT_DIR + '/pretrained_model/model.ckpt-100000'
-snapshot_dir = constant.SNAPSHOT_DIR + '/our_model/model.ckpt-100000'
+# snapshot_dir = constant.SNAPSHOT_DIR + '/our_model/model.ckpt-100000'
+snapshot_dir = constant.SNAPSHOT_DIR + '/our_model_without_crop/model.ckpt-100000'
 
 # path_prefix = "../final_rectangling/"
-path_prefix = "../our_final_rectangling/"
+# path_prefix = "../our_final_rectangling/"
+path_prefix = "../our_final_rectangling_without_crop/"
 
 # define dataset
 with tf.name_scope('dataset'):
